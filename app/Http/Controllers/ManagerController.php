@@ -26,9 +26,14 @@ class ManagerController extends Controller
         return response()->json($manager->load('School'), 201);
     }
 
-    public function show(Manager $manager)
+    public function show(string  $id)
+
     {
-        return response()->json($manager->load('School'));
+        $manager = Manager::with('School')->find($id);
+        if (!$manager) {
+            return response()->json(['message' => 'Manager not found'], 404);
+        }
+        return response()->json($manager);
     }
 
     public function update(Request $request, Manager $manager)
@@ -45,10 +50,16 @@ class ManagerController extends Controller
         return response()->json($manager->load('School'));
     }
 
-    public function destroy(Manager $manager)
-    {
-        $manager->delete();
+    public function destroy(string  $id)
 
+    {
+        
+        $manager = Manager::find($id);
+        if (!$manager) {
+            return response()->json(['message' => 'Manager not found'], 404);
+        }
+        
+        $manager->delete();
         return response()->json(null, 204);
     }
 }
