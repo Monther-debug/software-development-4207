@@ -4,23 +4,19 @@ namespace App\Http\Controllers;
 
 use App\Models\School;
 use Illuminate\Http\Request;
+use App\Http\Requests\StoreSchoolRequest;
+use App\Http\Requests\UpdateSchoolRequest;
 
 class SchoolController extends Controller
 {
     public function index()
     {
-        return response()->json(School::latest()->paginate(15));
+        return response()->json(School::latest()->get());
     }
 
-    public function store(Request $request)
+    public function store(StoreSchoolRequest $request)
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'address' => 'nullable|string|max:255',
-            'status' => 'in:active,inactive',
-            'type' => 'in:public,private',
-            'level' => 'in:primary,secondary,tertiary',
-        ]);
+        $validated = $request->validated();
 
         $school = School::create($validated);
 
@@ -32,15 +28,9 @@ class SchoolController extends Controller
         return response()->json($school);
     }
 
-    public function update(Request $request, School $school)
+    public function update(UpdateSchoolRequest $request, School $school)
     {
-        $validated = $request->validate([
-            'name' => 'sometimes|required|string|max:255',
-            'address' => 'nullable|string|max:255',
-            'status' => 'in:active,inactive',
-            'type' => 'in:public,private',
-            'level' => 'in:primary,secondary,tertiary',
-        ]);
+        $validated = $request->validated();
 
         $school->update($validated);
 

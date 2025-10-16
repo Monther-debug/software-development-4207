@@ -1,0 +1,151 @@
+{
+  "info": {
+    "_postman_id": "9f9e3b66-5a0f-4cb1-9ef8-7b3a3f5d7e2d",
+    "name": "Software Development 4207 API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": "Postman collection for Schools, Managers, and Admins APIs. Set baseUrl to your running app (e.g. http://localhost:8000)."
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:8000" }
+  ],
+  "item": [
+    {
+      "name": "Health",
+      "item": [
+        {
+          "name": "Ping",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/ping"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () { pm.response.to.have.status(200); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Schools",
+      "item": [
+        {
+          "name": "List Schools",
+          "request": { "method": "GET", "url": "{{baseUrl}}/api/schools" }
+        },
+        {
+          "name": "Create School",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Content-Type", "value": "application/json" } ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Central High\",\n  \"address\": \"123 Main St\",\n  \"status\": \"active\",\n  \"type\": \"public\",\n  \"level\": \"secondary\"\n}"
+            },
+            "url": "{{baseUrl}}/api/schools"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": { "type": "text/javascript", "exec": [
+                "pm.test('Created', function () { pm.response.to.have.status(201); });",
+                "let json = pm.response.json(); pm.collectionVariables.set('schoolId', json.id);"
+              ] }
+            }
+          ]
+        },
+        {
+          "name": "Show School",
+          "request": { "method": "GET", "url": "{{baseUrl}}/api/schools/{{schoolId}}" }
+        },
+        {
+          "name": "Update School",
+          "request": {
+            "method": "PUT",
+            "header": [ { "key": "Content-Type", "value": "application/json" } ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Central High Updated\"\n}"
+            },
+            "url": "{{baseUrl}}/api/schools/{{schoolId}}"
+          }
+        },
+        {
+          "name": "Delete School",
+          "request": { "method": "DELETE", "url": "{{baseUrl}}/api/schools/{{schoolId}}" }
+        }
+      ]
+    },
+    {
+      "name": "Managers",
+      "item": [
+        { "name": "List Managers", "request": { "method": "GET", "url": "{{baseUrl}}/api/managers" } },
+        {
+          "name": "Create Manager",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Content-Type", "value": "application/json" } ],
+            "body": { "mode": "raw", "raw": "{\n  \"name\": \"Alice Manager\",\n  \"email\": \"alice@example.com\",\n  \"password\": \"secret1234\",\n  \"school_id\": {{schoolId}}\n}" },
+            "url": "{{baseUrl}}/api/managers"
+          },
+          "event": [
+            { "listen": "test", "script": { "type": "text/javascript", "exec": [
+              "pm.test('Created', function () { pm.response.to.have.status(201); });",
+              "let json = pm.response.json(); pm.collectionVariables.set('managerId', json.id);"
+            ] } }
+          ]
+        },
+        { "name": "Show Manager", "request": { "method": "GET", "url": "{{baseUrl}}/api/managers/{{managerId}}" } },
+        {
+          "name": "Update Manager",
+          "request": {
+            "method": "PUT",
+            "header": [ { "key": "Content-Type", "value": "application/json" } ],
+            "body": { "mode": "raw", "raw": "{\n  \"name\": \"Alice M.\"\n}" },
+            "url": "{{baseUrl}}/api/managers/{{managerId}}"
+          }
+        },
+        { "name": "Delete Manager", "request": { "method": "DELETE", "url": "{{baseUrl}}/api/managers/{{managerId}}" } }
+      ]
+    },
+    {
+      "name": "Admins",
+      "item": [
+        { "name": "List Admins", "request": { "method": "GET", "url": "{{baseUrl}}/api/admins" } },
+        {
+          "name": "Create Admin",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Content-Type", "value": "application/json" } ],
+            "body": { "mode": "raw", "raw": "{\n  \"name\": \"Bob Admin\",\n  \"email\": \"bob@example.com\",\n  \"password\": \"secret1234\",\n  \"manager_id\": {{managerId}}\n}" },
+            "url": "{{baseUrl}}/api/admins"
+          },
+          "event": [
+            { "listen": "test", "script": { "type": "text/javascript", "exec": [
+              "pm.test('Created', function () { pm.response.to.have.status(201); });",
+              "let json = pm.response.json(); pm.collectionVariables.set('adminId', json.id);"
+            ] } }
+          ]
+        },
+        { "name": "Show Admin", "request": { "method": "GET", "url": "{{baseUrl}}/api/admins/{{adminId}}" } },
+        {
+          "name": "Update Admin",
+          "request": {
+            "method": "PUT",
+            "header": [ { "key": "Content-Type", "value": "application/json" } ],
+            "body": { "mode": "raw", "raw": "{\n  \"name\": \"Bob A.\"\n}" },
+            "url": "{{baseUrl}}/api/admins/{{adminId}}"
+          }
+        },
+        { "name": "Delete Admin", "request": { "method": "DELETE", "url": "{{baseUrl}}/api/admins/{{adminId}}" } }
+      ]
+    }
+  ]
+}

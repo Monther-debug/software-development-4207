@@ -4,22 +4,19 @@ namespace App\Http\Controllers;
 
 use App\Models\Manager;
 use Illuminate\Http\Request;
+use App\Http\Requests\StoreManagerRequest;
+use App\Http\Requests\UpdateManagerRequest;
 
 class ManagerController extends Controller
 {
     public function index()
     {
-        return response()->json(Manager::with('School')->latest()->paginate(15));
+        return response()->json(Manager::with('School')->latest()->get());
     }
 
-    public function store(Request $request)
+    public function store(StoreManagerRequest $request)
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:managers,email',
-            'password' => 'required|string|min:8',
-            'school_id' => 'required|exists:schools,id',
-        ]);
+        $validated = $request->validated();
 
         $manager = Manager::create($validated);
 
@@ -27,7 +24,7 @@ class ManagerController extends Controller
     }
 
     public function show(string  $id)
-
+ 
     {
         $manager = Manager::with('School')->find($id);
         if (!$manager) {
@@ -36,14 +33,9 @@ class ManagerController extends Controller
         return response()->json($manager);
     }
 
-    public function update(Request $request, Manager $manager)
+    public function update(UpdateManagerRequest $request, Manager $manager)
     {
-        $validated = $request->validate([
-            'name' => 'sometimes|required|string|max:255',
-            'email' => 'sometimes|required|email|unique:managers,email,'.$manager->id,
-            'password' => 'sometimes|required|string|min:8',
-            'school_id' => 'sometimes|required|exists:schools,id',
-        ]);
+        $validated = $request->validated();
 
         $manager->update($validated);
 

@@ -4,22 +4,19 @@ namespace App\Http\Controllers;
 
 use App\Models\Admin;
 use Illuminate\Http\Request;
+use App\Http\Requests\StoreAdminRequest;
+use App\Http\Requests\UpdateAdminRequest;
 
 class AdminController extends Controller
 {
     public function index()
     {
-        return response()->json(Admin::with('manager')->latest()->paginate(15));
+        return response()->json(Admin::with('manager')->latest()->get());
     }
 
-    public function store(Request $request)
+    public function store(StoreAdminRequest $request)
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:admins,email',
-            'password' => 'required|string|min:8',
-            'manager_id' => 'nullable|exists:managers,id',
-        ]);
+        $validated = $request->validated();
 
         $admin = Admin::create($validated);
 
@@ -31,14 +28,9 @@ class AdminController extends Controller
         return response()->json($admin->load('manager'));
     }
 
-    public function update(Request $request, Admin $admin)
+    public function update(UpdateAdminRequest $request, Admin $admin)
     {
-        $validated = $request->validate([
-            'name' => 'sometimes|required|string|max:255',
-            'email' => 'sometimes|required|email|unique:admins,email,'.$admin->id,
-            'password' => 'sometimes|required|string|min:8',
-            'manager_id' => 'nullable|exists:managers,id',
-        ]);
+        $validated = $request->validated();
 
         $admin->update($validated);
 
