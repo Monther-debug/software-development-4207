@@ -1,61 +1,153 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+## Software Development 4207 — REST API
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+A Laravel-based REST API for managing Schools, Managers, Admins, Grades, and Teachers. The API uses SQLite by default and exposes simple JSON CRUD endpoints without pagination. Validation is handled via Laravel Form Requests.
 
-## About Laravel
+## Tech stack
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+- PHP 8.3 + Laravel 12
+- SQLite (default) — file at `database/database.sqlite`
+- PHPUnit for tests
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Quick start (Windows)
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+Prerequisites: PHP 8.3, Composer. Node.js is optional (not required for the API).
 
-## Learning Laravel
+1) Install dependencies
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+```
+composer install
+```
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+2) App key and environment
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+- Ensure your `.env` is configured to use SQLite and points to `database/database.sqlite`.
+- Generate an app key:
 
-## Laravel Sponsors
+```
+php artisan key:generate
+```
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+3) Database
 
-### Premium Partners
+- The SQLite file exists at `database/database.sqlite`. If missing, create an empty file at that path.
+- Run migrations:
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+```
+php artisan migrate
+```
 
-## Contributing
+4) Run the API server
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+```
+php artisan serve
+```
 
-## Code of Conduct
+The server will start on http://127.0.0.1:8000. A project-level `server.php` router is included to support the built-in server.
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+## Base URL
 
-## Security Vulnerabilities
+- Local: `http://127.0.0.1:8000`
+- API prefix: `/api`
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+## Authentication
+
+No authentication is enabled. Password fields for Admins/Managers/Teachers are hashed automatically via Laravel casts.
+
+## Entities and relationships
+
+- School has many Managers, Grades, Teachers
+- Manager belongs to School
+- Admin belongs to Manager
+- Grade belongs to School; has many Teachers
+- Teacher belongs to School and (optionally) to a Grade
+
+Soft deletes are enabled on core tables. Unique constraints include unique emails and per-school grade code uniqueness.
+
+## Validation and conventions
+
+- Validation is defined in Form Requests under `app/Http/Requests` (Store/Update per resource).
+- Index endpoints return full collections (no pagination).
+- Common enums:
+	- School: `status` (active|inactive), `type`, `level`
+	- Grade: `status` (active|inactive)
+
+## Endpoints overview
+
+Base path: `/api`
+
+- Health
+	- GET `/api/ping` → `{ "pong": true }`
+
+- Schools
+	- GET `/api/schools`
+	- POST `/api/schools` — `{ name, address, status, type, level }`
+	- GET `/api/schools/{id}`
+	- PUT `/api/schools/{id}`
+	- DELETE `/api/schools/{id}`
+
+- Managers
+	- GET `/api/managers` (eager-loads `school`)
+	- POST `/api/managers` — `{ name, email, password, school_id }`
+	- GET `/api/managers/{id}`
+	- PUT `/api/managers/{id}`
+	- DELETE `/api/managers/{id}`
+
+- Admins
+	- GET `/api/admins` (eager-loads `manager`)
+	- POST `/api/admins` — `{ name, email, password, manager_id? }`
+	- GET `/api/admins/{id}`
+	- PUT `/api/admins/{id}`
+	- DELETE `/api/admins/{id}`
+
+- Grades
+	- GET `/api/grades` (eager-loads `school`)
+	- POST `/api/grades` — `{ school_id, name, code, status }`
+	- GET `/api/grades/{id}`
+	- PUT `/api/grades/{id}`
+	- DELETE `/api/grades/{id}`
+
+- Teachers
+	- GET `/api/teachers` (eager-loads `school`, `grade`)
+	- POST `/api/teachers` — `{ school_id, grade_id?, name, email, password }`
+	- GET `/api/teachers/{id}`
+	- PUT `/api/teachers/{id}`
+	- DELETE `/api/teachers/{id}`
+
+Notes
+
+- Create a School first, then you can create Managers, Grades, and Teachers under it. Teachers may optionally reference a Grade.
+- Email fields must be unique. Grade `code` is unique per school.
+
+## Postman collection
+
+Import `postman/software-development-4207.postman_collection.json` into Postman.
+
+- Variables: the collection captures created IDs (e.g., `schoolId`, `gradeId`) for chaining requests.
+- Base URL: set to `http://127.0.0.1:8000` if not set automatically.
+
+## Running tests
+
+```
+vendor\bin\phpunit.bat
+```
+
+There is a simple health check test for `/api/ping`. More tests can be added under `tests/`.
+
+## Troubleshooting
+
+- HTTP 500 "no such table": Run migrations — `php artisan migrate`.
+- `php artisan serve` complains about router: This repo includes `server.php` at the project root for the built-in server.
+- Empty lists: Newly created tables start empty; use the POST endpoints to create records.
+
+## Project structure (high level)
+
+- `routes/api.php` — API routes (ping, schools, managers, admins, grades, teachers)
+- `app/Models/*` — Eloquent models
+- `app/Http/Controllers/*` — JSON CRUD controllers (no pagination)
+- `app/Http/Requests/*` — Form Request validation per resource
+- `database/migrations/*` — Schema (includes soft deletes, FKs)
+- `postman/software-development-4207.postman_collection.json` — API requests
 
 ## License
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+MIT
