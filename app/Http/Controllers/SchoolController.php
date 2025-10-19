@@ -19,7 +19,6 @@ class SchoolController extends Controller
         $validated = $request->validated();
 
         $school = School::create($validated);
-
         return response()->json($school, 201);
     }
 

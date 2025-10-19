@@ -4,6 +4,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\SchoolController;
 use App\Http\Controllers\ManagerController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\GradeController;
+use App\Http\Controllers\TeacherController;
 
 /*
 |--------------------------------------------------------------------------
@@ -23,3 +25,5 @@ Route::get('/ping', function () {
 Route::apiResource('schools', SchoolController::class);
 Route::apiResource('managers', ManagerController::class);
 Route::apiResource('admins', AdminController::class);
+Route::apiResource('grades', GradeController::class);
+Route::apiResource('teachers', TeacherController::class);
