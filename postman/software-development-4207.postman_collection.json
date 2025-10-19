@@ -146,6 +146,70 @@
         },
         { "name": "Delete Admin", "request": { "method": "DELETE", "url": "{{baseUrl}}/api/admins/{{adminId}}" } }
       ]
+    },
+    {
+      "name": "Grades",
+      "item": [
+        { "name": "List Grades", "request": { "method": "GET", "url": "{{baseUrl}}/api/grades" } },
+        {
+          "name": "Create Grade",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Content-Type", "value": "application/json" } ],
+            "body": { "mode": "raw", "raw": "{\n  \"school_id\": {{schoolId}},\n  \"name\": \"Grade 10\",\n  \"code\": \"G10\",\n  \"status\": \"active\"\n}" },
+            "url": "{{baseUrl}}/api/grades"
+          },
+          "event": [
+            { "listen": "test", "script": { "type": "text/javascript", "exec": [
+              "pm.test('Created', function () { pm.response.to.have.status(201); });",
+              "let json = pm.response.json(); pm.collectionVariables.set('gradeId', json.id);"
+            ] } }
+          ]
+        },
+        { "name": "Show Grade", "request": { "method": "GET", "url": "{{baseUrl}}/api/grades/{{gradeId}}" } },
+        {
+          "name": "Update Grade",
+          "request": {
+            "method": "PUT",
+            "header": [ { "key": "Content-Type", "value": "application/json" } ],
+            "body": { "mode": "raw", "raw": "{\n  \"name\": \"Grade 10 Updated\"\n}" },
+            "url": "{{baseUrl}}/api/grades/{{gradeId}}"
+          }
+        },
+        { "name": "Delete Grade", "request": { "method": "DELETE", "url": "{{baseUrl}}/api/grades/{{gradeId}}" } }
+      ]
+    },
+    {
+      "name": "Teachers",
+      "item": [
+        { "name": "List Teachers", "request": { "method": "GET", "url": "{{baseUrl}}/api/teachers" } },
+        {
+          "name": "Create Teacher",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Content-Type", "value": "application/json" } ],
+            "body": { "mode": "raw", "raw": "{\n  \"school_id\": {{schoolId}},\n  \"grade_id\": {{gradeId}},\n  \"name\": \"Mr. Smith\",\n  \"email\": \"smith@example.com\",\n  \"password\": \"secret1234\"\n}" },
+            "url": "{{baseUrl}}/api/teachers"
+          },
+          "event": [
+            { "listen": "test", "script": { "type": "text/javascript", "exec": [
+              "pm.test('Created', function () { pm.response.to.have.status(201); });",
+              "let json = pm.response.json(); pm.collectionVariables.set('teacherId', json.id);"
+            ] } }
+          ]
+        },
+        { "name": "Show Teacher", "request": { "method": "GET", "url": "{{baseUrl}}/api/teachers/{{teacherId}}" } },
+        {
+          "name": "Update Teacher",
+          "request": {
+            "method": "PUT",
+            "header": [ { "key": "Content-Type", "value": "application/json" } ],
+            "body": { "mode": "raw", "raw": "{\n  \"name\": \"Mr. S.\"\n}" },
+            "url": "{{baseUrl}}/api/teachers/{{teacherId}}"
+          }
+        },
+        { "name": "Delete Teacher", "request": { "method": "DELETE", "url": "{{baseUrl}}/api/teachers/{{teacherId}}" } }
+      ]
     }
   ]
 }
