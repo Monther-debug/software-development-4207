@@ -34,6 +34,126 @@
       ]
     },
     {
+      "name": "Fees",
+      "item": [
+        {
+          "name": "List Fees",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/fees",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "fees"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Create Fee",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"school_id\": {{schoolId}},\n  \"grade_id\": {{gradeId}},\n  \"name\": \"Tuition\",\n  \"code\": \"TUITION\",\n  \"amount\": 500.00,\n  \"currency\": \"USD\",\n  \"frequency\": \"term\",\n  \"status\": \"active\",\n  \"due_date\": \"{{todayPlus30}}\",\n  \"description\": \"Term tuition fee\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/fees",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "fees"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const json = pm.response.json();",
+                  "pm.collectionVariables.set('feeId', json.id);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Show Fee",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/fees/{{feeId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "fees",
+                "{{feeId}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Update Fee",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"amount\": 600.00\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/fees/{{feeId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "fees",
+                "{{feeId}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Delete Fee",
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "{{baseUrl}}/api/fees/{{feeId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "fees",
+                "{{feeId}}"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
       "name": "Schools",
       "item": [
         {

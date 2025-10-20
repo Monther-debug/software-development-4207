@@ -6,6 +6,7 @@ use App\Http\Controllers\ManagerController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\GradeController;
 use App\Http\Controllers\TeacherController;
+use App\Http\Controllers\FeeController;
 
 /*
 |--------------------------------------------------------------------------
@@ -27,3 +28,4 @@ Route::apiResource('managers', ManagerController::class);
 Route::apiResource('admins', AdminController::class);
 Route::apiResource('grades', GradeController::class);
 Route::apiResource('teachers', TeacherController::class);
+Route::apiResource('fees', FeeController::class);
