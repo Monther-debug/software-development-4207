@@ -6,12 +6,14 @@ use App\Models\Admin;
 use Illuminate\Http\Request;
 use App\Http\Requests\StoreAdminRequest;
 use App\Http\Requests\UpdateAdminRequest;
+use App\Http\Resources\AdminResource;
 
 class AdminController extends Controller
 {
     public function index()
     {
-        return response()->json(Admin::with('manager')->latest()->get());
+        $admins = Admin::with('manager')->latest()->get();
+        return AdminResource::collection($admins);
     }
 
     public function store(StoreAdminRequest $request)
@@ -20,12 +22,14 @@ class AdminController extends Controller
 
         $admin = Admin::create($validated);
 
-        return response()->json($admin->load('manager'), 201);
+        return (new AdminResource($admin->load('manager')))
+            ->response()
+            ->setStatusCode(201);
     }
 
     public function show(Admin $admin)
     {
-        return response()->json($admin->load('manager'));
+        return new AdminResource($admin->load('manager'));
     }
 
     public function update(UpdateAdminRequest $request, Admin $admin)
@@ -34,7 +38,7 @@ class AdminController extends Controller
 
         $admin->update($validated);
 
-        return response()->json($admin->load('manager'));
+        return new AdminResource($admin->load('manager'));
     }
 
     public function destroy(Admin $admin)

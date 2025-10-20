@@ -6,12 +6,14 @@ use App\Models\Manager;
 use Illuminate\Http\Request;
 use App\Http\Requests\StoreManagerRequest;
 use App\Http\Requests\UpdateManagerRequest;
+use App\Http\Resources\ManagerResource;
 
 class ManagerController extends Controller
 {
     public function index()
     {
-        return response()->json(Manager::with('School')->latest()->get());
+        $managers = Manager::with('School')->latest()->get();
+        return ManagerResource::collection($managers);
     }
 
     public function store(StoreManagerRequest $request)
@@ -20,7 +22,9 @@ class ManagerController extends Controller
 
         $manager = Manager::create($validated);
 
-        return response()->json($manager->load('School'), 201);
+        return (new ManagerResource($manager->load('School')))
+            ->response()
+            ->setStatusCode(201);
     }
 
     public function show(string  $id)
@@ -30,7 +34,7 @@ class ManagerController extends Controller
         if (!$manager) {
             return response()->json(['message' => 'Manager not found'], 404);
         }
-        return response()->json($manager);
+        return new ManagerResource($manager);
     }
 
     public function update(UpdateManagerRequest $request, Manager $manager)
@@ -39,7 +43,7 @@ class ManagerController extends Controller
 
         $manager->update($validated);
 
-        return response()->json($manager->load('School'));
+        return new ManagerResource($manager->load('School'));
     }
 
     public function destroy(string  $id)

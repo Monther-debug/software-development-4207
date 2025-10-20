@@ -28,5 +28,8 @@ class Manager extends Model
     public function School()
     {
         return $this->belongsTo(School::class ,"school_id");
+
+
+        
     }
 }

@@ -5,29 +5,33 @@ namespace App\Http\Controllers;
 use App\Models\Teacher;
 use App\Http\Requests\StoreTeacherRequest;
 use App\Http\Requests\UpdateTeacherRequest;
+use App\Http\Resources\TeacherResource;
 
 class TeacherController extends Controller
 {
     public function index()
     {
-        return response()->json(Teacher::with(['school', 'grade'])->latest()->get());
+        $teachers = Teacher::with(['school', 'grade'])->latest()->get();
+        return TeacherResource::collection($teachers);
     }
 
     public function store(StoreTeacherRequest $request)
     {
         $teacher = Teacher::create($request->validated());
-        return response()->json($teacher->load(['school', 'grade']), 201);
+        return (new TeacherResource($teacher->load(['school', 'grade'])))
+            ->response()
+            ->setStatusCode(201);
     }
 
     public function show(Teacher $teacher)
     {
-        return response()->json($teacher->load(['school', 'grade']));
+        return new TeacherResource($teacher->load(['school', 'grade']));
     }
 
     public function update(UpdateTeacherRequest $request, Teacher $teacher)
     {
         $teacher->update($request->validated());
-        return response()->json($teacher->load(['school', 'grade']));
+        return new TeacherResource($teacher->load(['school', 'grade']));
     }
 
     public function destroy(Teacher $teacher)

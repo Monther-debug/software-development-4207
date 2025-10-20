@@ -17,9 +17,7 @@ return new class extends Migration
             $table->string('address')->nullable();
             $table->enum('status', ['active', 'inactive'])->default('active');
             $table->enum('type', ['public', 'private'])->default('public');
-            
-            $table->enum('level', ['primary', 'secondary', 'tertiary'])->default('primary');
-            
+            $table->enum('level', ['primary', 'secondary', 'tertiary'])->default('primary');     
             $table->timestamps();
             $table->softDeletes();
         });
