@@ -177,19 +177,6 @@ There is a simple health check test for `/api/ping`. More tests can be added und
 - `php artisan serve` complains about router: This repo includes `server.php` at the project root for the built-in server.
 - Empty lists: Newly created tables start empty; use the POST endpoints to create records.
 
-## Project structure (high level)
-
-- `routes/api.php` — API routes (ping, schools, managers, admins, grades, teachers)
-- `app/Models/*` — Eloquent models
-- `app/Http/Controllers/*` — JSON CRUD controllers (no pagination)
-- `app/Http/Requests/*` — Form Request validation per resource
-- `database/migrations/*` — Schema (includes soft deletes, FKs)
-- `postman/software-development-4207.postman_collection.json` — API requests
-
-Postman notes
-
-- The collection includes variables to help chaining requests: `schoolId`, `gradeId`, `managerId`, `adminId`, `teacherId`, `feeId`.
-- For comments/ratings use the variables `commentableTypeSchool` or `commentableTypeTeacher` and `rateableTypeSchool`/`rateableTypeTeacher` (they resolve to the model class strings).
 
 
 ## License
