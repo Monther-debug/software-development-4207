@@ -7,6 +7,8 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\GradeController;
 use App\Http\Controllers\TeacherController;
 use App\Http\Controllers\FeeController;
+use App\Http\Controllers\CommentController;
+use App\Http\Controllers\RatingController;
 
 /*
 |--------------------------------------------------------------------------
@@ -29,3 +31,6 @@ Route::apiResource('admins', AdminController::class);
 Route::apiResource('grades', GradeController::class);
 Route::apiResource('teachers', TeacherController::class);
 Route::apiResource('fees', FeeController::class);
+Route::apiResource('comments', CommentController::class);
+Route::apiResource('ratings', RatingController::class);
+Route::post('ratings/average', [RatingController::class, 'average']);

@@ -118,6 +118,44 @@ Notes
 - Create a School first, then you can create Managers, Grades, and Teachers under it. Teachers may optionally reference a Grade.
 - Email fields must be unique. Grade `code` is unique per school.
 
+## Comments & Ratings (polymorphic)
+
+This project supports polymorphic Comments and Ratings which can be attached to multiple entity types (currently Schools and Teachers).
+
+- Comments (polymorphic)
+	- CRUD endpoints: `/api/comments`
+	- Create example body to attach to a school:
+
+```json
+{
+	"commentable_type": "App\\Models\\School",
+	"commentable_id": 1,
+	"author": "Alice",
+	"body": "Great school!"
+}
+```
+
+- Ratings (polymorphic)
+	- CRUD endpoints: `/api/ratings`
+	- Average endpoint: POST `/api/ratings/average` with body `{ rateable_type, rateable_id }` returns `{ average }`.
+	- Create example to attach to a teacher:
+
+```json
+{
+	"rateable_type": "App\\Models\\Teacher",
+	"rateable_id": 1,
+	"author": "Parent",
+	"score": 5,
+	"note": "Very supportive"
+}
+```
+
+Notes
+
+- `*_type` expects the fully-qualified model class string (for example `App\\Models\\School` or `App\\Models\\Teacher`).
+- You can query comments/ratings via the top-level endpoints and filter by `commentable_type/commentable_id` or `rateable_type/rateable_id` client-side.
+
+
 ## Postman collection
 
 Import `postman/software-development-4207.postman_collection.json` into Postman.
@@ -147,6 +185,12 @@ There is a simple health check test for `/api/ping`. More tests can be added und
 - `app/Http/Requests/*` — Form Request validation per resource
 - `database/migrations/*` — Schema (includes soft deletes, FKs)
 - `postman/software-development-4207.postman_collection.json` — API requests
+
+Postman notes
+
+- The collection includes variables to help chaining requests: `schoolId`, `gradeId`, `managerId`, `adminId`, `teacherId`, `feeId`.
+- For comments/ratings use the variables `commentableTypeSchool` or `commentableTypeTeacher` and `rateableTypeSchool`/`rateableTypeTeacher` (they resolve to the model class strings).
+
 
 ## License
 

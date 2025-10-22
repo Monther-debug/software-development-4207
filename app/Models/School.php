@@ -22,4 +22,14 @@ class School extends Model
     {
         return $this->hasMany(Manager::class);
     }
+
+    public function comments()
+    {
+        return $this->morphMany(Comment::class, 'commentable');
+    }
+
+    public function ratings()
+    {
+        return $this->morphMany(Rating::class, 'rateable');
+    }
 }

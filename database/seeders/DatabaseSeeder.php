@@ -15,6 +15,8 @@ class DatabaseSeeder extends Seeder
             GradesSeeder::class,
             FeesSeeder::class,
             AdminsSeeder::class,
+            CommentsSeeder::class,
+            RatingsSeeder::class,
         ]);
     }
 }

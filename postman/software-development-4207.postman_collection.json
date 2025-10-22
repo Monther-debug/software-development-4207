@@ -6,7 +6,11 @@
     "description": "Postman collection for Schools, Managers, and Admins APIs. Set baseUrl to your running app (e.g. http://localhost:8000)."
   },
   "variable": [
-    { "key": "baseUrl", "value": "http://localhost:8000" }
+    { "key": "baseUrl", "value": "http://localhost:8000" },
+    { "key": "commentableTypeSchool", "value": "App\\Models\\School" },
+    { "key": "commentableTypeTeacher", "value": "App\\Models\\Teacher" },
+    { "key": "rateableTypeSchool", "value": "App\\Models\\School" },
+    { "key": "rateableTypeTeacher", "value": "App\\Models\\Teacher" }
   ],
   "item": [
     {
@@ -329,6 +333,88 @@
           }
         },
         { "name": "Delete Teacher", "request": { "method": "DELETE", "url": "{{baseUrl}}/api/teachers/{{teacherId}}" } }
+      ]
+    },
+    {
+      "name": "Comments",
+      "item": [
+        {
+          "name": "List Comments",
+          "request": { "method": "GET", "url": "{{baseUrl}}/api/comments" }
+        },
+        {
+          "name": "Create Comment (School)",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Content-Type", "value": "application/json" } ],
+            "body": { "mode": "raw", "raw": "{\n  \"commentable_type\": \"{{commentableTypeSchool}}\",\n  \"commentable_id\": {{schoolId}},\n  \"author\": \"Seeder\",\n  \"body\": \"Good school\"\n}" },
+            "url": "{{baseUrl}}/api/comments"
+          }
+        },
+        {
+          "name": "Create Comment (Teacher)",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Content-Type", "value": "application/json" } ],
+            "body": { "mode": "raw", "raw": "{\n  \"commentable_type\": \"{{commentableTypeTeacher}}\",\n  \"commentable_id\": {{teacherId}},\n  \"author\": \"Parent\",\n  \"body\": \"Excellent teacher\"\n}" },
+            "url": "{{baseUrl}}/api/comments"
+          }
+        },
+        { "name": "Show Comment", "request": { "method": "GET", "url": "{{baseUrl}}/api/comments/{{commentId}}" } },
+        {
+          "name": "Update Comment",
+          "request": {
+            "method": "PUT",
+            "header": [ { "key": "Content-Type", "value": "application/json" } ],
+            "body": { "mode": "raw", "raw": "{\n  \"body\": \"Updated comment\"\n}" },
+            "url": "{{baseUrl}}/api/comments/{{commentId}}"
+          }
+        },
+        { "name": "Delete Comment", "request": { "method": "DELETE", "url": "{{baseUrl}}/api/comments/{{commentId}}" } }
+      ]
+    },
+    {
+      "name": "Ratings",
+      "item": [
+        { "name": "List Ratings", "request": { "method": "GET", "url": "{{baseUrl}}/api/ratings" } },
+        {
+          "name": "Create Rating (School)",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Content-Type", "value": "application/json" } ],
+            "body": { "mode": "raw", "raw": "{\n  \"rateable_type\": \"{{rateableTypeSchool}}\",\n  \"rateable_id\": {{schoolId}},\n  \"author\": \"Parent\",\n  \"score\": 5,\n  \"note\": \"Great\"\n}" },
+            "url": "{{baseUrl}}/api/ratings"
+          }
+        },
+        {
+          "name": "Create Rating (Teacher)",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Content-Type", "value": "application/json" } ],
+            "body": { "mode": "raw", "raw": "{\n  \"rateable_type\": \"{{rateableTypeTeacher}}\",\n  \"rateable_id\": {{teacherId}},\n  \"author\": \"Parent\",\n  \"score\": 4,\n  \"note\": \"Good\"\n}" },
+            "url": "{{baseUrl}}/api/ratings"
+          }
+        },
+        { "name": "Show Rating", "request": { "method": "GET", "url": "{{baseUrl}}/api/ratings/{{ratingId}}" } },
+        {
+          "name": "Update Rating",
+          "request": {
+            "method": "PUT",
+            "header": [ { "key": "Content-Type", "value": "application/json" } ],
+            "body": { "mode": "raw", "raw": "{\n  \"score\": 3\n}" },
+            "url": "{{baseUrl}}/api/ratings/{{ratingId}}"
+          }
+        },
+        { "name": "Delete Rating", "request": { "method": "DELETE", "url": "{{baseUrl}}/api/ratings/{{ratingId}}" } },
+        {
+          "name": "Average Rating",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Content-Type", "value": "application/json" } ],
+            "body": { "mode": "raw", "raw": "{\n  \"rateable_type\": \"{{rateableTypeTeacher}}\",\n  \"rateable_id\": {{teacherId}}\n}" },
+            "url": "{{baseUrl}}/api/ratings/average"
+          }
+        }
       ]
     }
   ]

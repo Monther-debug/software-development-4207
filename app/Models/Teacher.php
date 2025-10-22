@@ -35,4 +35,14 @@ class Teacher extends Model
     {
         return $this->belongsTo(Grade::class);
     }
+
+    public function comments()
+    {
+        return $this->morphMany(Comment::class, 'commentable');
+    }
+
+    public function ratings()
+    {
+        return $this->morphMany(Rating::class, 'rateable');
+    }
 }
