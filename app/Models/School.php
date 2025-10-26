@@ -32,4 +32,11 @@ class School extends Model
     {
         return $this->morphMany(Rating::class, 'rateable');
     }
+
+    public function teachers()
+    {
+        return $this->belongsToMany(Teacher::class, 'schools_teachers', 'schoolID', 'teacherID')
+            ->withPivot('gradeID')
+            ->withTimestamps();
+    }
 }

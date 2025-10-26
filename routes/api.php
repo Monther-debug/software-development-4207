@@ -34,3 +34,10 @@ Route::apiResource('fees', FeeController::class);
 Route::apiResource('comments', CommentController::class);
 Route::apiResource('ratings', RatingController::class);
 Route::post('ratings/average', [RatingController::class, 'average']);
+
+// Nested school-teacher assignments
+use App\Http\Controllers\SchoolTeacherController;
+Route::get('schools/{school}/teachers', [SchoolTeacherController::class, 'index']);
+Route::post('schools/{school}/teachers', [SchoolTeacherController::class, 'store']);
+Route::put('schools/{school}/teachers/{teacher}', [SchoolTeacherController::class, 'update']);
+Route::delete('schools/{school}/teachers/{teacher}', [SchoolTeacherController::class, 'destroy']);

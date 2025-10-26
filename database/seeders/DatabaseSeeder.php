@@ -17,6 +17,7 @@ class DatabaseSeeder extends Seeder
             AdminsSeeder::class,
             CommentsSeeder::class,
             RatingsSeeder::class,
+            SchoolTeacherSeeder::class,
         ]);
     }
 }
