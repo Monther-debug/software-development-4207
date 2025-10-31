@@ -204,6 +204,66 @@
         {
           "name": "Delete School",
           "request": { "method": "DELETE", "url": "{{baseUrl}}/api/schools/{{schoolId}}" }
+        },
+        {
+            "name": "School Teachers",
+            "item": [
+                {
+                    "name": "List School Teachers",
+                    "request": {
+                        "method": "GET",
+                        "url": "{{baseUrl}}/api/schools/{{schoolId}}/teachers"
+                    }
+                },
+                {
+                    "name": "Assign Teacher to School",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"teacher_id\": {{teacherId}},\n  \"grade_id\": {{gradeId}}\n}"
+                        },
+                        "url": "{{baseUrl}}/api/schools/{{schoolId}}/teachers"
+                    }
+                },
+                {
+                    "name": "Show School Teacher",
+                    "request": {
+                        "method": "GET",
+                        "url": "{{baseUrl}}/api/schools/{{schoolId}}/teachers/{{teacherId}}"
+                    }
+                },
+                {
+                    "name": "Update School Teacher",
+                    "request": {
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"grade_id\": {{gradeId2}}\n}"
+                        },
+                        "url": "{{baseUrl}}/api/schools/{{schoolId}}/teachers/{{teacherId}}"
+                    }
+                },
+                {
+                    "name": "Detach Teacher from School",
+                    "request": {
+                        "method": "DELETE",
+                        "url": "{{baseUrl}}/api/schools/{{schoolId}}/teachers/{{teacherId}}"
+                    }
+                }
+            ]
         }
       ]
     },

@@ -17,6 +17,7 @@ class CommentController extends Controller
     public function store(StoreCommentRequest $request)
     {
         $comment = Comment::create($request->validated());
+        
         return (new CommentResource($comment))
             ->response()
             ->setStatusCode(201);
@@ -30,6 +31,7 @@ class CommentController extends Controller
     public function update(StoreCommentRequest $request, Comment $comment)
     {
         $comment->update($request->validated());
+
         return new CommentResource($comment);
     }
 
