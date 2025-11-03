@@ -51,7 +51,125 @@ The server will start on http://127.0.0.1:8000. A project-level `server.php` rou
 
 ## Authentication
 
-No authentication is enabled. Password fields for Admins/Managers/Teachers are hashed automatically via Laravel casts.
+JWT (JSON Web Token) authentication is enabled for Managers, Admins, and Teachers. The API uses the `tymon/jwt-auth` package.
+
+### Authentication Endpoints
+
+All authentication endpoints are under `/api`:
+
+- **POST** `/api/login` — Authenticate and receive a JWT token
+- **POST** `/api/register` — Register a new user (Manager, Admin, or Teacher)
+- **POST** `/api/logout` — Invalidate the current token
+- **POST** `/api/refresh` — Refresh an expired token
+- **GET** `/api/me` — Get the authenticated user's details
+
+### User Types (Guards)
+
+The API supports three user types, each with its own authentication guard:
+
+- `manager` — Managers (stored in `managers` table)
+- `admin` — Admins (stored in `admins` table)
+- `teacher` — Teachers (stored in `teachers` table)
+
+### Login Example
+
+```json
+POST /api/login
+{
+  "email": "manager@example.com",
+  "password": "password123",
+  "guard": "manager"
+}
+```
+
+**Response:**
+```json
+{
+  "access_token": "eyJ0eXAiOiJKV1QiLCJhbGc...",
+  "token_type": "bearer",
+  "expires_in": 3600,
+  "guard": "manager"
+}
+```
+
+### Register Example
+
+**Manager:**
+```json
+POST /api/register
+{
+  "name": "John Manager",
+  "email": "manager@example.com",
+  "password": "password123",
+  "password_confirmation": "password123",
+  "guard": "manager",
+  "school_id": 1
+}
+```
+
+**Admin:**
+```json
+POST /api/register
+{
+  "name": "Jane Admin",
+  "email": "admin@example.com",
+  "password": "password123",
+  "password_confirmation": "password123",
+  "guard": "admin",
+  "manager_id": 1
+}
+```
+
+**Teacher:**
+```json
+POST /api/register
+{
+  "name": "Bob Teacher",
+  "email": "teacher@example.com",
+  "password": "password123",
+  "password_confirmation": "password123",
+  "guard": "teacher",
+  "school_id": 1,
+  "grade_id": 2
+}
+```
+
+### Using the Token
+
+Include the token in the `Authorization` header for protected endpoints:
+
+```
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGc...
+```
+
+### Get Current User
+
+```json
+GET /api/me
+{
+  "guard": "manager"
+}
+```
+
+### Logout
+
+```json
+POST /api/logout
+{
+  "guard": "manager"
+}
+```
+
+### Refresh Token
+
+```json
+POST /api/refresh
+{
+  "guard": "manager"
+}
+```
+
+**Note:** Password fields are automatically hashed using Laravel's `hashed` cast.
 
 ## Entities and relationships
 

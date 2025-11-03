@@ -21,6 +21,7 @@ class AuthController extends Controller
         $validator = Validator::make($request->all(), [
             'email' => 'required|string|email',
             'password' => 'required|string',
+            'guard' => 'required|string|in:api,manager,admin,teacher',
         ]);
 
         if ($validator->fails()) {
@@ -28,12 +29,13 @@ class AuthController extends Controller
         }
 
         $credentials = $request->only('email', 'password');
+        $guard = $request->input('guard', 'api');
 
-        if (! $token = JWTAuth::attempt($credentials)) {
+        if (! $token = auth($guard)->attempt($credentials)) {
             return response()->json(['error' => 'Unauthorized'], 401);
         }
 
-        return $this->respondWithToken($token);
+        return $this->respondWithToken($token, $guard);
     }
 
     public function register(Request $request)
@@ -42,46 +44,53 @@ class AuthController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:6|confirmed',
+            'guard' => 'required|string|in:api,manager,admin,teacher',
         ]);
 
         if($validator->fails()){
             return response()->json($validator->errors()->toJson(), 400);
         }
 
+        $guard = $request->input('guard', 'api');
+        
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
         ]);
 
-        $token = JWTAuth::fromUser($user);
+        $token = auth($guard)->login($user);
 
-        return $this->respondWithToken($token);
+        return $this->respondWithToken($token, $guard);
     }
 
-    public function me()
+    public function me(Request $request)
     {
-        return response()->json(Auth::user());
+        $guard = $request->input('guard', 'api');
+        return response()->json(auth($guard)->user());
     }
 
-    public function logout()
+    public function logout(Request $request)
     {
-        Auth::logout();
+        $guard = $request->input('guard', 'api');
+        auth($guard)->logout();
 
         return response()->json(['message' => 'Successfully logged out']);
     }
 
-    public function refresh()
+    public function refresh(Request $request)
     {
-        return $this->respondWithToken(JWTAuth::refresh());
+        $guard = $request->input('guard', 'api');
+        return $this->respondWithToken(auth($guard)->refresh(), $guard);
     }
 
-    protected function respondWithToken($token)
+    protected function respondWithToken($token, $guard = 'api')
     {
         return response()->json([
             'access_token' => $token,
             'token_type' => 'bearer',
-            'expires_in' => JWTAuth::factory()->getTTL() * 60
+            'expires_in' => auth($guard)->factory()->getTTL() * 60,
+            'guard' => $guard
         ]);
     }
 }

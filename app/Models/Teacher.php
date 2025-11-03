@@ -3,10 +3,11 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Tymon\JWTAuth\Contracts\JWTSubject;
 
-class Teacher extends Model
+class Teacher extends Authenticatable implements JWTSubject
 {
     use HasFactory, SoftDeletes;
 
@@ -51,5 +52,15 @@ class Teacher extends Model
         return $this->belongsToMany(School::class, 'schools_teachers', 'teacherID', 'schoolID')
             ->withPivot('gradeID')
             ->withTimestamps();
+    }
+
+    public function getJWTIdentifier()
+    {
+        return $this->getKey();
+    }
+
+    public function getJWTCustomClaims()
+    {
+        return [];
     }
 }
