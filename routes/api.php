@@ -30,9 +30,7 @@ Route::controller(AuthController::class)->group(function () {
     Route::get('me', 'me');
 });
 
-Route::get('/ping', function () {
-    return response()->json(['message' => 'pong']);
-});
+
 
 Route::apiResource('schools', SchoolController::class);
 Route::apiResource('managers', ManagerController::class);
