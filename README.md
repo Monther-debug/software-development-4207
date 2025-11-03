@@ -69,6 +69,26 @@ The server will start on http://127.0.0.1:8000. A project-level `server.php` rou
 
 JWT (JSON Web Token) authentication is enabled for Managers, Admins, and Teachers. The API uses the `tymon/jwt-auth` package.
 
+### JWT Setup
+
+**Important:** Before using authentication endpoints, make sure you've completed the JWT configuration step in the Quick Start section above (step 4).
+
+If you skipped it, run:
+
+```bash
+composer require tymon/jwt-auth
+php artisan jwt:secret
+```
+
+The `jwt:secret` command generates a secret key and adds it to your `.env` file as `JWT_SECRET`. This key is essential for signing and verifying tokens.
+
+### How JWT Works in This API
+
+1. **Login** with email, password, and specify your user type (guard: `manager`, `admin`, or `teacher`)
+2. **Receive a token** in the response
+3. **Use the token** in the `Authorization` header for all subsequent requests: `Authorization: Bearer {your-token}`
+4. **Refresh** the token before it expires, or **logout** to invalidate it
+
 ### Authentication Endpoints
 
 All authentication endpoints are under `/api`:
