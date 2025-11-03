@@ -36,7 +36,23 @@ php artisan key:generate
 php artisan migrate
 ```
 
-4) Run the API server
+4) Configure JWT Authentication
+
+- Install JWT package (if not already installed):
+
+```
+composer require tymon/jwt-auth
+```
+
+- Generate JWT secret key:
+
+```
+php artisan jwt:secret
+```
+
+This will add `JWT_SECRET` to your `.env` file. This key is used to sign your tokens.
+
+5) Run the API server
 
 ```
 php artisan serve
