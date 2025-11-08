@@ -1,0 +1,1120 @@
+{
+  "info": {
+    "_postman_id": "updated-4207-2025",
+    "name": "Software Development 4207 - Updated API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": "Complete API collection for School Management System with Admin, Manager, and User roles"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://127.0.0.1:8001", "type": "string" },
+    { "key": "adminToken", "value": "", "type": "string" },
+    { "key": "managerToken", "value": "", "type": "string" },
+    { "key": "userToken", "value": "", "type": "string" },
+    { "key": "schoolId", "value": "1", "type": "string" },
+    { "key": "managerId", "value": "1", "type": "string" },
+    { "key": "teacherId", "value": "1", "type": "string" },
+    { "key": "gradeId", "value": "1", "type": "string" },
+    { "key": "feeId", "value": "1", "type": "string" },
+    { "key": "ratingId", "value": "1", "type": "string" },
+    { "key": "commentId", "value": "1", "type": "string" }
+  ],
+  "item": [
+    {
+      "name": "Admin",
+      "item": [
+        {
+          "name": "Authentication",
+          "item": [
+            {
+              "name": "Admin Login",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "if (pm.response.code === 200) {",
+                      "    const jsonData = pm.response.json();",
+                      "    pm.collectionVariables.set('adminToken', jsonData.access_token);",
+                      "    pm.test('Login successful', function() {",
+                      "        pm.expect(jsonData.access_token).to.be.a('string');",
+                      "    });",
+                      "}"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [{ "key": "Content-Type", "value": "application/json" }],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"phone_number\": \"0987654321\",\n  \"password\": \"password\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/admin/login",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "admin", "login"]
+                }
+              }
+            },
+            {
+              "name": "Admin Logout",
+              "request": {
+                "method": "POST",
+                "header": [
+                  { "key": "Authorization", "value": "Bearer {{adminToken}}" }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/admin/logout",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "admin", "logout"]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "Schools",
+          "item": [
+            {
+              "name": "Get All Schools",
+              "request": {
+                "method": "GET",
+                "header": [
+                  { "key": "Authorization", "value": "Bearer {{adminToken}}" }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/admin/schools",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "admin", "schools"]
+                }
+              }
+            },
+            {
+              "name": "Create School",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "if (pm.response.code === 200 || pm.response.code === 201) {",
+                      "    const jsonData = pm.response.json();",
+                      "    if (jsonData.data && jsonData.data.id) {",
+                      "        pm.collectionVariables.set('schoolId', jsonData.data.id);",
+                      "    } else if (jsonData.id) {",
+                      "        pm.collectionVariables.set('schoolId', jsonData.id);",
+                      "    }",
+                      "}"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  { "key": "Authorization", "value": "Bearer {{adminToken}}" },
+                  { "key": "Content-Type", "value": "application/json" }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Test High School\",\n  \"address\": \"123 Test Street\",\n  \"status\": \"active\",\n  \"type\": \"male\",\n  \"level\": \"secondary\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/admin/schools",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "admin", "schools"]
+                }
+              }
+            },
+            {
+              "name": "Get School by ID",
+              "request": {
+                "method": "GET",
+                "header": [
+                  { "key": "Authorization", "value": "Bearer {{adminToken}}" }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/admin/schools/{{schoolId}}",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "admin", "schools", "{{schoolId}}"]
+                }
+              }
+            },
+            {
+              "name": "Update School",
+              "request": {
+                "method": "PUT",
+                "header": [
+                  { "key": "Authorization", "value": "Bearer {{adminToken}}" },
+                  { "key": "Content-Type", "value": "application/json" }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Updated School Name\",\n  \"address\": \"456 Updated Street\",\n  \"status\": \"active\",\n  \"type\": \"uni_gender\",\n  \"level\": \"secondary\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/admin/schools/{{schoolId}}",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "admin", "schools", "{{schoolId}}"]
+                }
+              }
+            },
+            {
+              "name": "Delete School",
+              "request": {
+                "method": "DELETE",
+                "header": [
+                  { "key": "Authorization", "value": "Bearer {{adminToken}}" }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/admin/schools/{{schoolId}}",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "admin", "schools", "{{schoolId}}"]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "Managers",
+          "item": [
+            {
+              "name": "Get All Managers",
+              "request": {
+                "method": "GET",
+                "header": [
+                  { "key": "Authorization", "value": "Bearer {{adminToken}}" }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/admin/managers",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "admin", "managers"]
+                }
+              }
+            },
+            {
+              "name": "Create Manager",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "if (pm.response.code === 200 || pm.response.code === 201) {",
+                      "    const jsonData = pm.response.json();",
+                      "    if (jsonData.data && jsonData.data.id) {",
+                      "        pm.collectionVariables.set('managerId', jsonData.data.id);",
+                      "    } else if (jsonData.id) {",
+                      "        pm.collectionVariables.set('managerId', jsonData.id);",
+                      "    }",
+                      "}"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  { "key": "Authorization", "value": "Bearer {{adminToken}}" },
+                  { "key": "Content-Type", "value": "application/json" }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"John Manager\",\n  \"username\": \"johnmgr\",\n  \"phone_number\": \"5551234567\",\n  \"password\": \"password123\",\n  \"schoolID\": 1\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/admin/managers",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "admin", "managers"]
+                }
+              }
+            },
+            {
+              "name": "Get Manager by ID",
+              "request": {
+                "method": "GET",
+                "header": [
+                  { "key": "Authorization", "value": "Bearer {{adminToken}}" }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/admin/managers/{{managerId}}",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "admin", "managers", "{{managerId}}"]
+                }
+              }
+            },
+            {
+              "name": "Update Manager",
+              "request": {
+                "method": "PUT",
+                "header": [
+                  { "key": "Authorization", "value": "Bearer {{adminToken}}" },
+                  { "key": "Content-Type", "value": "application/json" }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Updated Manager Name\",\n  \"username\": \"updatedmgr\",\n  \"phone_number\": \"5559876543\",\n  \"schoolID\": 1\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/admin/managers/{{managerId}}",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "admin", "managers", "{{managerId}}"]
+                }
+              }
+            },
+            {
+              "name": "Delete Manager",
+              "request": {
+                "method": "DELETE",
+                "header": [
+                  { "key": "Authorization", "value": "Bearer {{adminToken}}" }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/admin/managers/{{managerId}}",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "admin", "managers", "{{managerId}}"]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "Teachers",
+          "item": [
+            {
+              "name": "Get All Teachers",
+              "request": {
+                "method": "GET",
+                "header": [
+                  { "key": "Authorization", "value": "Bearer {{adminToken}}" }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/admin/teachers",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "admin", "teachers"]
+                }
+              }
+            },
+            {
+              "name": "Create Teacher",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "if (pm.response.code === 200 || pm.response.code === 201) {",
+                      "    const jsonData = pm.response.json();",
+                      "    if (jsonData.data && jsonData.data.id) {",
+                      "        pm.collectionVariables.set('teacherId', jsonData.data.id);",
+                      "    } else if (jsonData.id) {",
+                      "        pm.collectionVariables.set('teacherId', jsonData.id);",
+                      "    }",
+                      "}"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  { "key": "Authorization", "value": "Bearer {{adminToken}}" },
+                  { "key": "Content-Type", "value": "application/json" }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Sarah Johnson\",\n  \"subject\": \"Mathematics\",\n  \"experience\": 5\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/admin/teachers",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "admin", "teachers"]
+                }
+              }
+            },
+            {
+              "name": "Get Teacher by ID",
+              "request": {
+                "method": "GET",
+                "header": [
+                  { "key": "Authorization", "value": "Bearer {{adminToken}}" }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/admin/teachers/{{teacherId}}",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "admin", "teachers", "{{teacherId}}"]
+                }
+              }
+            },
+            {
+              "name": "Update Teacher",
+              "request": {
+                "method": "PUT",
+                "header": [
+                  { "key": "Authorization", "value": "Bearer {{adminToken}}" },
+                  { "key": "Content-Type", "value": "application/json" }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Sarah J. Updated\",\n  \"subject\": \"Advanced Mathematics\",\n  \"experience\": 7\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/admin/teachers/{{teacherId}}",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "admin", "teachers", "{{teacherId}}"]
+                }
+              }
+            },
+            {
+              "name": "Delete Teacher",
+              "request": {
+                "method": "DELETE",
+                "header": [
+                  { "key": "Authorization", "value": "Bearer {{adminToken}}" }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/admin/teachers/{{teacherId}}",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "admin", "teachers", "{{teacherId}}"]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "Success Ratings",
+          "item": [
+            {
+              "name": "Get All Success Ratings",
+              "request": {
+                "method": "GET",
+                "header": [
+                  { "key": "Authorization", "value": "Bearer {{adminToken}}" }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/admin/school-success-rate",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "admin", "school-success-rate"]
+                }
+              }
+            },
+            {
+              "name": "Get Success Rating by School",
+              "request": {
+                "method": "GET",
+                "header": [
+                  { "key": "Authorization", "value": "Bearer {{adminToken}}" }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/admin/school-success-rate/{{schoolId}}",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "admin", "school-success-rate", "{{schoolId}}"]
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Manager",
+      "item": [
+        {
+          "name": "Authentication",
+          "item": [
+            {
+              "name": "Manager Login",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "if (pm.response.code === 200) {",
+                      "    const jsonData = pm.response.json();",
+                      "    pm.collectionVariables.set('managerToken', jsonData.access_token);",
+                      "    pm.test('Login successful', function() {",
+                      "        pm.expect(jsonData.access_token).to.be.a('string');",
+                      "    });",
+                      "}"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [{ "key": "Content-Type", "value": "application/json" }],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"phone_number\": \"1234567890\",\n  \"password\": \"password\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/manager/login",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "manager", "login"]
+                }
+              }
+            },
+            {
+              "name": "Manager Logout",
+              "request": {
+                "method": "POST",
+                "header": [
+                  { "key": "Authorization", "value": "Bearer {{managerToken}}" }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/manager/logout",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "manager", "logout"]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "Grades",
+          "item": [
+            {
+              "name": "Get All Grades",
+              "request": {
+                "method": "GET",
+                "header": [
+                  { "key": "Authorization", "value": "Bearer {{managerToken}}" }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/manager/grades",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "manager", "grades"]
+                }
+              }
+            },
+            {
+              "name": "Create Grade",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "if (pm.response.code === 200 || pm.response.code === 201) {",
+                      "    const jsonData = pm.response.json();",
+                      "    if (jsonData.data && jsonData.data.id) {",
+                      "        pm.collectionVariables.set('gradeId', jsonData.data.id);",
+                      "    } else if (jsonData.id) {",
+                      "        pm.collectionVariables.set('gradeId', jsonData.id);",
+                      "    }",
+                      "}"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  { "key": "Authorization", "value": "Bearer {{managerToken}}" },
+                  { "key": "Content-Type", "value": "application/json" }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Grade 13\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/manager/grades",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "manager", "grades"]
+                }
+              }
+            },
+            {
+              "name": "Get Grade by ID",
+              "request": {
+                "method": "GET",
+                "header": [
+                  { "key": "Authorization", "value": "Bearer {{managerToken}}" }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/manager/grades/{{gradeId}}",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "manager", "grades", "{{gradeId}}"]
+                }
+              }
+            },
+            {
+              "name": "Update Grade",
+              "request": {
+                "method": "PUT",
+                "header": [
+                  { "key": "Authorization", "value": "Bearer {{managerToken}}" },
+                  { "key": "Content-Type", "value": "application/json" }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Grade 13 Updated\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/manager/grades/{{gradeId}}",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "manager", "grades", "{{gradeId}}"]
+                }
+              }
+            },
+            {
+              "name": "Delete Grade",
+              "request": {
+                "method": "DELETE",
+                "header": [
+                  { "key": "Authorization", "value": "Bearer {{managerToken}}" }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/manager/grades/{{gradeId}}",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "manager", "grades", "{{gradeId}}"]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "Fees",
+          "item": [
+            {
+              "name": "Get All Fees",
+              "request": {
+                "method": "GET",
+                "header": [
+                  { "key": "Authorization", "value": "Bearer {{managerToken}}" }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/manager/fees",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "manager", "fees"]
+                }
+              }
+            },
+            {
+              "name": "Create Fee",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "if (pm.response.code === 200 || pm.response.code === 201) {",
+                      "    const jsonData = pm.response.json();",
+                      "    if (jsonData.data && jsonData.data.id) {",
+                      "        pm.collectionVariables.set('feeId', jsonData.data.id);",
+                      "    } else if (jsonData.id) {",
+                      "        pm.collectionVariables.set('feeId', jsonData.id);",
+                      "    }",
+                      "}"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  { "key": "Authorization", "value": "Bearer {{managerToken}}" },
+                  { "key": "Content-Type", "value": "application/json" }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"gradeID\": 1,\n  \"amount\": 750.00\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/manager/fees",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "manager", "fees"]
+                }
+              }
+            },
+            {
+              "name": "Get Fee by ID",
+              "request": {
+                "method": "GET",
+                "header": [
+                  { "key": "Authorization", "value": "Bearer {{managerToken}}" }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/manager/fees/{{feeId}}",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "manager", "fees", "{{feeId}}"]
+                }
+              }
+            },
+            {
+              "name": "Update Fee",
+              "request": {
+                "method": "PUT",
+                "header": [
+                  { "key": "Authorization", "value": "Bearer {{managerToken}}" },
+                  { "key": "Content-Type", "value": "application/json" }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"gradeID\": 1,\n  \"amount\": 850.00\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/manager/fees/{{feeId}}",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "manager", "fees", "{{feeId}}"]
+                }
+              }
+            },
+            {
+              "name": "Delete Fee",
+              "request": {
+                "method": "DELETE",
+                "header": [
+                  { "key": "Authorization", "value": "Bearer {{managerToken}}" }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/manager/fees/{{feeId}}",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "manager", "fees", "{{feeId}}"]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "School Teachers",
+          "item": [
+            {
+              "name": "Get School Teachers",
+              "request": {
+                "method": "GET",
+                "header": [
+                  { "key": "Authorization", "value": "Bearer {{managerToken}}" }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/manager/schools/{{schoolId}}/teachers",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "manager", "schools", "{{schoolId}}", "teachers"]
+                }
+              }
+            },
+            {
+              "name": "Assign Teacher to School",
+              "request": {
+                "method": "POST",
+                "header": [
+                  { "key": "Authorization", "value": "Bearer {{managerToken}}" },
+                  { "key": "Content-Type", "value": "application/json" }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"teacherID\": 1,\n  \"gradeID\": 1,\n  \"year\": 2025\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/manager/schools/{{schoolId}}/teachers",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "manager", "schools", "{{schoolId}}", "teachers"]
+                }
+              }
+            },
+            {
+              "name": "Update Teacher Assignment",
+              "request": {
+                "method": "PUT",
+                "header": [
+                  { "key": "Authorization", "value": "Bearer {{managerToken}}" },
+                  { "key": "Content-Type", "value": "application/json" }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"gradeID\": 2,\n  \"year\": 2025\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/manager/schools/{{schoolId}}/teachers/{{teacherId}}",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "manager", "schools", "{{schoolId}}", "teachers", "{{teacherId}}"]
+                }
+              }
+            },
+            {
+              "name": "Remove Teacher from School",
+              "request": {
+                "method": "DELETE",
+                "header": [
+                  { "key": "Authorization", "value": "Bearer {{managerToken}}" }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/manager/schools/{{schoolId}}/teachers/{{teacherId}}",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "manager", "schools", "{{schoolId}}", "teachers", "{{teacherId}}"]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "Success Ratings",
+          "item": [
+            {
+              "name": "Get All Success Ratings",
+              "request": {
+                "method": "GET",
+                "header": [
+                  { "key": "Authorization", "value": "Bearer {{managerToken}}" }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/manager/success-ratings",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "manager", "success-ratings"]
+                }
+              }
+            },
+            {
+              "name": "Create Success Rating",
+              "request": {
+                "method": "POST",
+                "header": [
+                  { "key": "Authorization", "value": "Bearer {{managerToken}}" },
+                  { "key": "Content-Type", "value": "application/json" }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"gradeID\": 1,\n  \"total_students\": 100,\n  \"A\": 25,\n  \"B\": 35,\n  \"C\": 30,\n  \"D\": 10\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/manager/success-ratings",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "manager", "success-ratings"]
+                }
+              }
+            },
+            {
+              "name": "Get Success Rating by ID",
+              "request": {
+                "method": "GET",
+                "header": [
+                  { "key": "Authorization", "value": "Bearer {{managerToken}}" }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/manager/success-ratings/1",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "manager", "success-ratings", "1"]
+                }
+              }
+            },
+            {
+              "name": "Update Success Rating",
+              "request": {
+                "method": "PUT",
+                "header": [
+                  { "key": "Authorization", "value": "Bearer {{managerToken}}" },
+                  { "key": "Content-Type", "value": "application/json" }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"gradeID\": 1,\n  \"total_students\": 105,\n  \"A\": 30,\n  \"B\": 35,\n  \"C\": 28,\n  \"D\": 12\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/manager/success-ratings/1",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "manager", "success-ratings", "1"]
+                }
+              }
+            },
+            {
+              "name": "Delete Success Rating",
+              "request": {
+                "method": "DELETE",
+                "header": [
+                  { "key": "Authorization", "value": "Bearer {{managerToken}}" }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/manager/success-ratings/1",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "manager", "success-ratings", "1"]
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "User",
+      "item": [
+        {
+          "name": "Authentication",
+          "item": [
+            {
+              "name": "User Register",
+              "request": {
+                "method": "POST",
+                "header": [{ "key": "Content-Type", "value": "application/json" }],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Test Student\",\n  \"email\": \"student@example.com\",\n  \"password\": \"password123\",\n  \"password_confirmation\": \"password123\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/user/register",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "user", "register"]
+                }
+              }
+            },
+            {
+              "name": "User Login",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "if (pm.response.code === 200) {",
+                      "    const jsonData = pm.response.json();",
+                      "    pm.collectionVariables.set('userToken', jsonData.access_token);",
+                      "    pm.test('Login successful', function() {",
+                      "        pm.expect(jsonData.access_token).to.be.a('string');",
+                      "    });",
+                      "}"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [{ "key": "Content-Type", "value": "application/json" }],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"email\": \"user@example.com\",\n  \"password\": \"password\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/user/login",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "user", "login"]
+                }
+              }
+            },
+            {
+              "name": "User Logout",
+              "request": {
+                "method": "POST",
+                "header": [
+                  { "key": "Authorization", "value": "Bearer {{userToken}}" }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/user/logout",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "user", "logout"]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "Ratings",
+          "item": [
+            {
+              "name": "Get My Ratings",
+              "request": {
+                "method": "GET",
+                "header": [
+                  { "key": "Authorization", "value": "Bearer {{userToken}}" }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/user/ratings",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "user", "ratings"]
+                }
+              }
+            },
+            {
+              "name": "Create Rating",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "if (pm.response.code === 200 || pm.response.code === 201) {",
+                      "    const jsonData = pm.response.json();",
+                      "    if (jsonData.data && jsonData.data.id) {",
+                      "        pm.collectionVariables.set('ratingId', jsonData.data.id);",
+                      "    } else if (jsonData.id) {",
+                      "        pm.collectionVariables.set('ratingId', jsonData.id);",
+                      "    }",
+                      "}"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  { "key": "Authorization", "value": "Bearer {{userToken}}" },
+                  { "key": "Content-Type", "value": "application/json" }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"schoolID\": 1,\n  \"rating\": \"5\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/user/ratings",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "user", "ratings"]
+                }
+              }
+            },
+            {
+              "name": "Get Rating by ID",
+              "request": {
+                "method": "GET",
+                "header": [
+                  { "key": "Authorization", "value": "Bearer {{userToken}}" }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/user/ratings/{{ratingId}}",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "user", "ratings", "{{ratingId}}"]
+                }
+              }
+            },
+            {
+              "name": "Update Rating",
+              "request": {
+                "method": "PUT",
+                "header": [
+                  { "key": "Authorization", "value": "Bearer {{userToken}}" },
+                  { "key": "Content-Type", "value": "application/json" }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"rating\": \"4\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/user/ratings/{{ratingId}}",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "user", "ratings", "{{ratingId}}"]
+                }
+              }
+            },
+            {
+              "name": "Delete Rating",
+              "request": {
+                "method": "DELETE",
+                "header": [
+                  { "key": "Authorization", "value": "Bearer {{userToken}}" }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/user/ratings/{{ratingId}}",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "user", "ratings", "{{ratingId}}"]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "Comments",
+          "item": [
+            {
+              "name": "Get My Comments",
+              "request": {
+                "method": "GET",
+                "header": [
+                  { "key": "Authorization", "value": "Bearer {{userToken}}" }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/user/comments",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "user", "comments"]
+                }
+              }
+            },
+            {
+              "name": "Create Comment",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "if (pm.response.code === 200 || pm.response.code === 201) {",
+                      "    const jsonData = pm.response.json();",
+                      "    if (jsonData.data && jsonData.data.id) {",
+                      "        pm.collectionVariables.set('commentId', jsonData.data.id);",
+                      "    } else if (jsonData.id) {",
+                      "        pm.collectionVariables.set('commentId', jsonData.id);",
+                      "    }",
+                      "}"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  { "key": "Authorization", "value": "Bearer {{userToken}}" },
+                  { "key": "Content-Type", "value": "application/json" }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"schoolID\": 1,\n  \"comment\": \"Excellent school with great facilities and teachers!\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/user/comments",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "user", "comments"]
+                }
+              }
+            },
+            {
+              "name": "Get Comment by ID",
+              "request": {
+                "method": "GET",
+                "header": [
+                  { "key": "Authorization", "value": "Bearer {{userToken}}" }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/user/comments/{{commentId}}",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "user", "comments", "{{commentId}}"]
+                }
+              }
+            },
+            {
+              "name": "Update Comment",
+              "request": {
+                "method": "PUT",
+                "header": [
+                  { "key": "Authorization", "value": "Bearer {{userToken}}" },
+                  { "key": "Content-Type", "value": "application/json" }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"comment\": \"Updated: Still an excellent school!\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/user/comments/{{commentId}}",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "user", "comments", "{{commentId}}"]
+                }
+              }
+            },
+            {
+              "name": "Delete Comment",
+              "request": {
+                "method": "DELETE",
+                "header": [
+                  { "key": "Authorization", "value": "Bearer {{userToken}}" }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/user/comments/{{commentId}}",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "user", "comments", "{{commentId}}"]
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
