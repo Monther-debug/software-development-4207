@@ -3,44 +3,34 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\Teacher\StoreTeacherRequest;
+use App\Http\Requests\Admin\Teacher\UpdateTeacherRequest;
+use App\Http\Resources\TeacherResource;
 use App\Models\Teacher;
-use Illuminate\Http\Request;
 
 class TeacherController extends Controller
 {
     public function index()
     {
         $teachers = Teacher::all();
-        return response()->json($teachers);
+        return TeacherResource::collection($teachers);
     }
 
-    public function store(Request $request)
+    public function store(StoreTeacherRequest $request)
     {
-        $validatedData = $request->validate([
-            'name' => 'required|string|max:255',
-            'subject' => 'required|string|max:255',
-            'experience' => 'required|integer|min:0',
-        ]);
-
-        $teacher = Teacher::create($validatedData);
-        return response()->json($teacher, 201);
+        $teacher = Teacher::create($request->validated());
+        return new TeacherResource($teacher);
     }
 
     public function show(Teacher $teacher)
     {
-        return response()->json($teacher);
+        return new TeacherResource($teacher);
     }
 
-    public function update(Request $request, Teacher $teacher)
+    public function update(UpdateTeacherRequest $request, Teacher $teacher)
     {
-        $validatedData = $request->validate([
-            'name' => 'sometimes|string|max:255',
-            'subject' => 'sometimes|string|max:255',
-            'experience' => 'sometimes|integer|min:0',
-        ]);
-
-        $teacher->update($validatedData);
-        return response()->json($teacher);
+        $teacher->update($request->validated());
+        return new TeacherResource($teacher);
     }
 
     public function destroy(Teacher $teacher)

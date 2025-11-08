@@ -3,48 +3,34 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\School\StoreSchoolRequest;
+use App\Http\Requests\Admin\School\UpdateSchoolRequest;
+use App\Http\Resources\SchoolResource;
 use App\Models\School;
-use Illuminate\Http\Request;
 
 class SchoolController extends Controller
 {
     public function index()
     {
         $schools = School::all();
-        return response()->json($schools);
+        return SchoolResource::collection($schools);
     }
 
-    public function store(Request $request)
+    public function store(StoreSchoolRequest $request)
     {
-        $validatedData = $request->validate([
-            'name' => 'required|string|max:255',
-            'address' => 'nullable|string',
-            'status' => 'required|in:active,inactive',
-            'type' => 'required|in:female,male,uni_gender',
-            'level' => 'required|in:primary,secondary,tertiary',
-        ]);
-
-        $school = School::create($validatedData);
-        return response()->json($school, 201);
+        $school = School::create($request->validated());
+        return new SchoolResource($school);
     }
 
     public function show(School $school)
     {
-        return response()->json($school);
+        return new SchoolResource($school);
     }
 
-    public function update(Request $request, School $school)
+    public function update(UpdateSchoolRequest $request, School $school)
     {
-        $validatedData = $request->validate([
-            'name' => 'sometimes|string|max:255',
-            'address' => 'nullable|string',
-            'status' => 'sometimes|in:active,inactive',
-            'type' => 'sometimes|in:female,male,uni_gender',
-            'level' => 'sometimes|in:primary,secondary,tertiary',
-        ]);
-
-        $school->update($validatedData);
-        return response()->json($school);
+        $school->update($request->validated());
+        return new SchoolResource($school);
     }
 
     public function destroy(School $school)
