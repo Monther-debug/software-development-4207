@@ -1,337 +1,528 @@
-## Software Development 4207 — REST API
+## Software Development 4207 — School Management REST API
 
-A Laravel-based REST API for managing Schools, Managers, Admins, Grades, and Teachers. The API uses SQLite by default and exposes simple JSON CRUD endpoints without pagination. Validation is handled via Laravel Form Requests.
+A Laravel-based REST API for managing Schools, Managers, Admins, Teachers, Grades, Fees, Ratings, and Comments. The API uses SQLite and provides role-based access control with JWT authentication for three user types: Admin, Manager, and User.
 
-## Tech stack
+## Tech Stack
 
-- PHP 8.3 + Laravel 12
-- SQLite (default) — file at `database/database.sqlite`
-- PHPUnit for tests
+- **PHP 8.2+** with **Laravel 12**
+- **SQLite** database (file at `database/database.sqlite`)
+- **JWT Authentication** (`tymon/jwt-auth`) with three separate guards
+- **Form Request Validation** for all inputs
+- **API Resource Classes** for standardized JSON responses
+- **PHPUnit** for testing
 
-## Quick start (Windows)
+## Quick Start
 
-Prerequisites: PHP 8.3, Composer. Node.js is optional (not required for the API).
+**Prerequisites:** PHP 8.2+, Composer installed
 
-1) Install dependencies
+### 1. Install Dependencies
 
-```
+```bash
 composer install
 ```
 
-2) App key and environment
+### 2. Environment Setup
 
-- Ensure your `.env` is configured to use SQLite and points to `database/database.sqlite`.
-- Generate an app key:
+Copy the example environment file and generate application key:
 
-```
+```bash
+cp .env.example .env
 php artisan key:generate
 ```
 
-3) Database
+### 3. Configure JWT Authentication
 
-- The SQLite file exists at `database/database.sqlite`. If missing, create an empty file at that path.
-- Run migrations:
+Generate JWT secret key:
 
-```
-php artisan migrate
-```
-
-4) Configure JWT Authentication
-
-- Install JWT package (if not already installed):
-
-```
-composer require tymon/jwt-auth
-```
-
-- Generate JWT secret key:
-
-```
+```bash
 php artisan jwt:secret
 ```
 
-This will add `JWT_SECRET` to your `.env` file. This key is used to sign your tokens.
+This adds `JWT_SECRET` to your `.env` file for signing authentication tokens.
 
-5) Run the API server
+### 4. Database Setup
 
+The SQLite file should already exist at `database/database.sqlite`. If missing, create it:
+
+```bash
+touch database/database.sqlite
 ```
-php artisan serve
+
+Run migrations and seed the database:
+
+```bash
+php artisan migrate:fresh --seed
 ```
 
-The server will start on http://127.0.0.1:8000. A project-level `server.php` router is included to support the built-in server.
+This creates all tables and adds sample data:
+- 3 Schools with Managers and Admins
+- 12 Grades (Grade 1-12)
+- 3 Teachers
+- 2 Users
+- Sample Fees, Ratings, and Comments
 
-## Base URL
+### 5. Start the Server
 
-- Local: `http://127.0.0.1:8000`
-- API prefix: `/api`
+```bash
+php artisan serve --port=8001
+```
+
+The API will be available at **http://127.0.0.1:8001**
+
+## API Overview
+
+**Base URL:** `http://127.0.0.1:8001/api`
+
+The API follows a role-based access control pattern with three distinct user types:
+
+### 1. **Admin** (Super Admin)
+- **Authentication:** phone_number + password
+- **Permissions:** Full CRUD on Schools, Managers, Teachers; Read-only access to Success Ratings
+- **Login:** `POST /api/admin/login`
+
+### 2. **Manager** (School Manager)
+- **Authentication:** phone_number + password
+- **Permissions:** Manage Grades, Fees, School-Teacher assignments, Success Ratings (scoped to their school)
+- **Login:** `POST /api/manager/login`
+
+### 3. **User** (Public/Parent/Student)
+- **Authentication:** email + password
+- **Permissions:** Create and manage their own Ratings and Comments for schools
+- **Registration:** `POST /api/user/register`
+- **Login:** `POST /api/user/login`
 
 ## Authentication
 
-JWT (JSON Web Token) authentication is enabled for Managers, Admins, and Teachers. The API uses the `tymon/jwt-auth` package.
+All three user types use **JWT (JSON Web Token)** authentication with separate guards.
 
-### JWT Setup
+### Test Credentials
 
-**Important:** Before using authentication endpoints, make sure you've completed the JWT configuration step in the Quick Start section above (step 4).
+After running seeders, you can use these credentials:
 
-If you skipped it, run:
-
-```bash
-composer require tymon/jwt-auth
-php artisan jwt:secret
+**Admin:**
+```json
+{
+  "phone_number": "0987654321",
+  "password": "password"
+}
 ```
 
-The `jwt:secret` command generates a secret key and adds it to your `.env` file as `JWT_SECRET`. This key is essential for signing and verifying tokens.
-
-### How JWT Works in This API
-
-1. **Login** with email, password, and specify your user type (guard: `manager`, `admin`, or `teacher`)
-2. **Receive a token** in the response
-3. **Use the token** in the `Authorization` header for all subsequent requests: `Authorization: Bearer {your-token}`
-4. **Refresh** the token before it expires, or **logout** to invalidate it
-
-### Authentication Endpoints
-
-All authentication endpoints are under `/api`:
-
-- **POST** `/api/login` — Authenticate and receive a JWT token
-- **POST** `/api/register` — Register a new user (Manager, Admin, or Teacher)
-- **POST** `/api/logout` — Invalidate the current token
-- **POST** `/api/refresh` — Refresh an expired token
-- **GET** `/api/me` — Get the authenticated user's details
-
-### User Types (Guards)
-
-The API supports three user types, each with its own authentication guard:
-
-- `manager` — Managers (stored in `managers` table)
-- `admin` — Admins (stored in `admins` table)
-- `teacher` — Teachers (stored in `teachers` table)
-
-### Login Example
-
+**Manager:**
 ```json
-POST /api/login
 {
-  "email": "manager@example.com",
-  "password": "password123",
-  "guard": "manager"
+  "phone_number": "1234567890",
+  "password": "password"
 }
+```
+
+**User:**
+```json
+{
+  "email": "user@example.com",
+  "password": "password"
+}
+```
+
+### Authentication Flow
+
+1. **Login** to your respective endpoint
+2. **Receive JWT token** in response: `{ "access_token": "eyJ0...", ... }`
+3. **Include token** in all subsequent requests:
+   ```
+   Authorization: Bearer {your-token}
+   ```
+4. **Logout** when done: `POST /api/{role}/logout`
+
+## Data Model
+
+The API manages the following entities:
+
+### Core Entities
+
+- **School** - Educational institutions
+  - Fields: `name`, `address`, `status` (active|inactive), `type` (male|uni_gender), `level` (primary|secondary)
+  - Has many: Managers, Teachers
+
+- **Manager** - School administrators
+  - Fields: `name`, `username`, `phone_number`, `password`, `schoolID`
+  - Belongs to: School
+  - Authentication: phone_number
+
+- **Admin** - System administrators
+  - Fields: `name`, `username`, `phone_number`, `password`
+  - Authentication: phone_number
+
+- **Grade** - Education levels (Grade 1-12)
+  - Fields: `name`
+  - Independent entity (no school relationship)
+
+- **Teacher** - Teaching staff
+  - Fields: `name`, `subject`, `experience`
+  - Can be assigned to schools via pivot table
+
+- **User** - Public users (parents/students)
+  - Fields: `name`, `email`, `password`
+  - Authentication: email
+
+### Relationship Entities
+
+- **Fee** - Tuition fees per school and grade
+  - Fields: `schoolID`, `gradeID`, `amount`
+
+- **SchoolTeacher** (Pivot) - Teacher assignments to schools
+  - Fields: `schoolID`, `teacherID`, `gradeID`, `year`
+
+- **Rating** - User ratings for schools
+  - Fields: `schoolID`, `userID`, `rating` (enum: '1'-'5')
+  - User can rate each school only once
+
+- **Comment** - User comments about schools
+  - Fields: `schoolID`, `userID`, `comment`
+
+- **SuccessRating** - Academic performance metrics per school and grade
+  - Fields: `schoolID`, `gradeID`, `total_students`, `A`, `B`, `C`, `D`
+
+### Field Naming Convention
+
+The API uses **camelCase suffixes** for foreign keys:
+- `schoolID` (not school_id)
+- `gradeID` (not grade_id)
+- `teacherID` (not teacher_id)
+- `userID` (not user_id)
+
+## API Endpoints
+
+All endpoints require JWT authentication except login and registration endpoints.
+
+### Admin Endpoints (`/api/admin`)
+
+**Authentication:**
+- `POST /api/admin/login` - Login with phone_number and password
+- `POST /api/admin/logout` - Logout and invalidate token
+
+**Schools:**
+- `GET /api/admin/schools` - List all schools
+- `POST /api/admin/schools` - Create school
+- `GET /api/admin/schools/{id}` - Get school details
+- `PUT /api/admin/schools/{id}` - Update school
+- `DELETE /api/admin/schools/{id}` - Delete school
+
+**Managers:**
+- `GET /api/admin/managers` - List all managers
+- `POST /api/admin/managers` - Create manager
+- `GET /api/admin/managers/{id}` - Get manager details
+- `PUT /api/admin/managers/{id}` - Update manager
+- `DELETE /api/admin/managers/{id}` - Delete manager
+
+**Teachers:**
+- `GET /api/admin/teachers` - List all teachers
+- `POST /api/admin/teachers` - Create teacher
+- `GET /api/admin/teachers/{id}` - Get teacher details
+- `PUT /api/admin/teachers/{id}` - Update teacher
+- `DELETE /api/admin/teachers/{id}` - Delete teacher
+
+**Success Ratings (Read-Only):**
+- `GET /api/admin/school-success-rate` - List all success ratings
+- `GET /api/admin/school-success-rate/{schoolId}` - Get ratings for specific school
+
+### Manager Endpoints (`/api/manager`)
+
+**Authentication:**
+- `POST /api/manager/login` - Login with phone_number and password
+- `POST /api/manager/logout` - Logout and invalidate token
+
+**Grades:**
+- `GET /api/manager/grades` - List all grades
+- `POST /api/manager/grades` - Create grade
+- `GET /api/manager/grades/{id}` - Get grade details
+- `PUT /api/manager/grades/{id}` - Update grade
+- `DELETE /api/manager/grades/{id}` - Delete grade
+
+**Fees:**
+- `GET /api/manager/fees` - List fees for manager's school
+- `POST /api/manager/fees` - Create fee
+- `GET /api/manager/fees/{id}` - Get fee details
+- `PUT /api/manager/fees/{id}` - Update fee
+- `DELETE /api/manager/fees/{id}` - Delete fee
+
+**School-Teacher Assignments:**
+- `GET /api/manager/schools/{schoolId}/teachers` - List teachers in school
+- `POST /api/manager/schools/{schoolId}/teachers` - Assign teacher to school
+- `PUT /api/manager/schools/{schoolId}/teachers/{teacherId}` - Update assignment
+- `DELETE /api/manager/schools/{schoolId}/teachers/{teacherId}` - Remove teacher
+
+**Success Ratings:**
+- `GET /api/manager/success-ratings` - List ratings for manager's school
+- `POST /api/manager/success-ratings` - Create success rating
+- `GET /api/manager/success-ratings/{id}` - Get rating details
+- `PUT /api/manager/success-ratings/{id}` - Update rating
+- `DELETE /api/manager/success-ratings/{id}` - Delete rating
+
+### User Endpoints (`/api/user`)
+
+**Authentication:**
+- `POST /api/user/register` - Register new user account
+- `POST /api/user/login` - Login with email and password
+- `POST /api/user/logout` - Logout and invalidate token
+
+**Ratings:**
+- `GET /api/user/ratings` - List user's own ratings
+- `POST /api/user/ratings` - Create rating for a school
+- `GET /api/user/ratings/{id}` - Get rating details
+- `PUT /api/user/ratings/{id}` - Update rating
+- `DELETE /api/user/ratings/{id}` - Delete rating
+
+**Comments:**
+- `GET /api/user/comments` - List user's own comments
+- `POST /api/user/comments` - Create comment for a school
+- `GET /api/user/comments/{id}` - Get comment details
+- `PUT /api/user/comments/{id}` - Update comment
+- `DELETE /api/user/comments/{id}` - Delete comment
+
+## Request/Response Examples
+
+### Admin: Create School
+
+**Request:**
+```bash
+curl -X POST http://127.0.0.1:8001/api/admin/schools \
+  -H "Authorization: Bearer {admin-token}" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Central High School",
+    "address": "123 Main Street",
+    "status": "active",
+    "type": "male",
+    "level": "secondary"
+  }'
 ```
 
 **Response:**
 ```json
 {
-  "access_token": "eyJ0eXAiOiJKV1QiLCJhbGc...",
-  "token_type": "bearer",
-  "expires_in": 3600,
-  "guard": "manager"
+  "data": {
+    "id": 1,
+    "name": "Central High School",
+    "address": "123 Main Street",
+    "status": "active",
+    "type": "male",
+    "level": "secondary"
+  }
 }
 ```
 
-### Register Example
+### Manager: Create Fee
 
-**Manager:**
-```json
-POST /api/register
-{
-  "name": "John Manager",
-  "email": "manager@example.com",
-  "password": "password123",
-  "password_confirmation": "password123",
-  "guard": "manager",
-  "school_id": 1
-}
+**Request:**
+```bash
+curl -X POST http://127.0.0.1:8001/api/manager/fees \
+  -H "Authorization: Bearer {manager-token}" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "gradeID": 1,
+    "amount": 750.00
+  }'
 ```
 
-**Admin:**
-```json
-POST /api/register
-{
-  "name": "Jane Admin",
-  "email": "admin@example.com",
-  "password": "password123",
-  "password_confirmation": "password123",
-  "guard": "admin",
-  "manager_id": 1
-}
-```
-
-**Teacher:**
-```json
-POST /api/register
-{
-  "name": "Bob Teacher",
-  "email": "teacher@example.com",
-  "password": "password123",
-  "password_confirmation": "password123",
-  "guard": "teacher",
-  "school_id": 1,
-  "grade_id": 2
-}
-```
-
-### Using the Token
-
-Include the token in the `Authorization` header for protected endpoints:
-
-```
-Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGc...
-```
-
-### Get Current User
-
-```json
-GET /api/me
-{
-  "guard": "manager"
-}
-```
-
-### Logout
-
-```json
-POST /api/logout
-{
-  "guard": "manager"
-}
-```
-
-### Refresh Token
-
-```json
-POST /api/refresh
-{
-  "guard": "manager"
-}
-```
-
-**Note:** Password fields are automatically hashed using Laravel's `hashed` cast.
-
-## Entities and relationships
-
-- School has many Managers, Grades, Teachers
-- Manager belongs to School
-- Admin belongs to Manager
-- Grade belongs to School; has many Teachers
-- Teacher belongs to School and (optionally) to a Grade
-
-Soft deletes are enabled on core tables. Unique constraints include unique emails and per-school grade code uniqueness.
-
-## Validation and conventions
-
-- Validation is defined in Form Requests under `app/Http/Requests` (Store/Update per resource).
-- Index endpoints return full collections (no pagination).
-- Common enums:
-	- School: `status` (active|inactive), `type`, `level`
-	- Grade: `status` (active|inactive)
-
-## Endpoints overview
-
-Base path: `/api`
-
-- Health
-	- GET `/api/ping` → `{ "pong": true }`
-
-- Schools
-	- GET `/api/schools`
-	- POST `/api/schools` — `{ name, address, status, type, level }`
-	- GET `/api/schools/{id}`
-	- PUT `/api/schools/{id}`
-	- DELETE `/api/schools/{id}`
-
-- Managers
-	- GET `/api/managers` (eager-loads `school`)
-	- POST `/api/managers` — `{ name, email, password, school_id }`
-	- GET `/api/managers/{id}`
-	- PUT `/api/managers/{id}`
-	- DELETE `/api/managers/{id}`
-
-- Admins
-	- GET `/api/admins` (eager-loads `manager`)
-	- POST `/api/admins` — `{ name, email, password, manager_id? }`
-	- GET `/api/admins/{id}`
-	- PUT `/api/admins/{id}`
-	- DELETE `/api/admins/{id}`
-
-- Grades
-	- GET `/api/grades` (eager-loads `school`)
-	- POST `/api/grades` — `{ school_id, name, code, status }`
-	- GET `/api/grades/{id}`
-	- PUT `/api/grades/{id}`
-	- DELETE `/api/grades/{id}`
-
-- Teachers
-	- GET `/api/teachers` (eager-loads `school`, `grade`)
-	- POST `/api/teachers` — `{ school_id, grade_id?, name, email, password }`
-	- GET `/api/teachers/{id}`
-	- PUT `/api/teachers/{id}`
-	- DELETE `/api/teachers/{id}`
-
-Notes
-
-- Create a School first, then you can create Managers, Grades, and Teachers under it. Teachers may optionally reference a Grade.
-- Email fields must be unique. Grade `code` is unique per school.
-
-## Comments & Ratings (polymorphic)
-
-This project supports polymorphic Comments and Ratings which can be attached to multiple entity types (currently Schools and Teachers).
-
-- Comments (polymorphic)
-	- CRUD endpoints: `/api/comments`
-	- Create example body to attach to a school:
-
+**Response:**
 ```json
 {
-	"commentable_type": "App\\Models\\School",
-	"commentable_id": 1,
-	"author": "Alice",
-	"body": "Great school!"
+  "data": {
+    "id": 1,
+    "schoolID": 1,
+    "gradeID": 1,
+    "amount": 750.00
+  }
 }
 ```
 
-- Ratings (polymorphic)
-	- CRUD endpoints: `/api/ratings`
-	- Average endpoint: POST `/api/ratings/average` with body `{ rateable_type, rateable_id }` returns `{ average }`.
-	- Create example to attach to a teacher:
+### User: Create Rating
 
+**Request:**
+```bash
+curl -X POST http://127.0.0.1:8001/api/user/ratings \
+  -H "Authorization: Bearer {user-token}" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "schoolID": 1,
+    "rating": "5"
+  }'
+```
+
+**Response:**
 ```json
 {
-	"rateable_type": "App\\Models\\Teacher",
-	"rateable_id": 1,
-	"author": "Parent",
-	"score": 5,
-	"note": "Very supportive"
+  "data": {
+    "id": 1,
+    "schoolID": 1,
+    "userID": 1,
+    "rating": "5"
+  }
 }
 ```
 
-Notes
+## Validation
 
-- `*_type` expects the fully-qualified model class string (for example `App\\Models\\School` or `App\\Models\\Teacher`).
-- You can query comments/ratings via the top-level endpoints and filter by `commentable_type/commentable_id` or `rateable_type/rateable_id` client-side.
+All create and update operations use **Laravel Form Request** classes with comprehensive validation rules:
+
+- **Required fields** are enforced
+- **Unique constraints** on phone numbers and emails
+- **Enum validation** for status, type, level, rating fields
+- **Foreign key validation** ensures referenced records exist
+- **Authorization policies** ensure users can only modify their own resources
 
 
-## Postman collection
+## Postman Collection
 
-Import `postman/software-development-4207.postman_collection.json` into Postman.
+Two Postman collections are available in the `postman/` directory:
 
-- Variables: the collection captures created IDs (e.g., `schoolId`, `gradeId`) for chaining requests.
-- Base URL: set to `http://127.0.0.1:8000` if not set automatically.
+### Updated Collection (Recommended)
+**File:** `postman/software-development-4207-updated.postman_collection.json`
 
-## Running tests
+This collection includes:
+- ✅ All 56 current API endpoints
+- ✅ Correct base URL (port 8001)
+- ✅ Separate folders for Admin, Manager, and User
+- ✅ Auto-capture JWT tokens from login responses
+- ✅ Updated field naming (schoolID, gradeID, etc.)
+- ✅ Pre-configured test credentials
+- ✅ Auto-capture resource IDs for request chaining
+
+**To use:**
+1. Import `postman/software-development-4207-updated.postman_collection.json` into Postman
+2. Start with authentication endpoints (Admin/Manager/User Login)
+3. Token will be automatically saved and used in subsequent requests
+4. Created resource IDs are automatically captured for testing
+
+### Legacy Collection
+**File:** `postman/software-development-4207.postman_collection.json`
+
+Contains the original structure with polymorphic relationships. Not compatible with current API.
+
+## Testing
+
+### PHPUnit Tests
+
+Run the test suite:
+
+```bash
+php artisan test
+```
+
+Or using PHPUnit directly:
+
+```bash
+vendor/bin/phpunit
+```
+
+### Manual Endpoint Testing
+
+A comprehensive testing guide is available in `API_TESTING_GUIDE.md` with curl commands for all 56 endpoints.
+
+**Quick test script:**
+
+```bash
+# Make the script executable
+chmod +x run_tests.sh
+
+# Run tests (requires server running on port 8001)
+./run_tests.sh
+```
+
+**Note:** Keep the Laravel server running in a separate terminal when testing:
+
+```bash
+php artisan serve --port=8001
+```
+
+## Project Structure
 
 ```
-vendor\bin\phpunit.bat
+app/
+├── Http/
+│   ├── Controllers/
+│   │   ├── Admin/          # Admin role controllers
+│   │   ├── Manager/        # Manager role controllers
+│   │   └── User/           # User role controllers
+│   ├── Requests/           # Form Request validation (14 classes)
+│   └── Resources/          # API Resources for JSON responses
+├── Models/                 # Eloquent models
+└── Providers/
+
+database/
+├── migrations/             # Database schema
+└── seeders/                # Sample data seeders (9 seeders)
+
+postman/
+├── software-development-4207-updated.postman_collection.json  # Current
+└── software-development-4207.postman_collection.json          # Legacy
+
+routes/
+└── api.php                 # All API routes (56 endpoints)
 ```
 
-There is a simple health check test for `/api/ping`. More tests can be added under `tests/`.
+## Code Architecture
+
+The project follows Laravel best practices:
+
+- **Thin Controllers:** Business logic in Form Requests and Models
+- **Form Request Validation:** All inputs validated before reaching controllers
+- **API Resources:** Standardized JSON response format
+- **JWT Guards:** Separate authentication contexts for each role
+- **Eloquent Relationships:** Proper model relationships with eager loading
+- **Database Seeders:** Reproducible test data
 
 ## Troubleshooting
 
-- HTTP 500 "no such table": Run migrations — `php artisan migrate`.
-- `php artisan serve` complains about router: This repo includes `server.php` at the project root for the built-in server.
-- Empty lists: Newly created tables start empty; use the POST endpoints to create records.
+### Common Issues
 
+**"JWT secret not set"**
+- Run: `php artisan jwt:secret`
+- Verify `JWT_SECRET` exists in `.env`
 
+**"No such table" errors**
+- Run: `php artisan migrate:fresh --seed`
+- Verify `database/database.sqlite` exists
+
+**Authentication fails with valid credentials**
+- Check you're using the correct login endpoint for your role:
+  - Admin: `/api/admin/login` with `phone_number`
+  - Manager: `/api/manager/login` with `phone_number`
+  - User: `/api/user/login` with `email`
+
+**"Unauthenticated" on protected endpoints**
+- Verify JWT token is included: `Authorization: Bearer {token}`
+- Check token hasn't expired
+- Ensure you're using the correct guard's token
+
+**Server not responding**
+- Confirm server is running: `php artisan serve --port=8001`
+- Check correct port in requests (8001, not 8000)
+
+**Validation errors**
+- Check field names use camelCase suffixes: `schoolID`, `gradeID`, not `school_id`, `grade_id`
+- Verify rating values are strings: `"1"` to `"5"`, not integers
+- Ensure all required fields are provided
+
+**Foreign key constraint errors**
+- Verify referenced IDs exist (schoolID, gradeID, etc.)
+- Check user has permission to access the resource
+
+## Additional Documentation
+
+- **API Testing Guide:** See `API_TESTING_GUIDE.md` for detailed endpoint documentation with curl examples
+- **Endpoint Tests:** See `ENDPOINT_TESTS.md` for block-by-block testing commands
+- **Test Script:** See `run_tests.sh` for automated testing
+
+## Contributing
+
+When making changes:
+1. Update Form Request validation rules in `app/Http/Requests/`
+2. Update API Resources in `app/Http/Resources/` for response formatting
+3. Follow the thin controller pattern - keep controllers simple
+4. Use camelCase for foreign key fields (schoolID, gradeID, etc.)
+5. Update tests in `tests/` directory
+6. Update this README and documentation files
 
 ## License
 
