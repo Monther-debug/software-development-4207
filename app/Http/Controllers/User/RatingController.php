@@ -3,27 +3,25 @@
 namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\User\Rating\StoreRatingRequest;
+use App\Http\Requests\User\Rating\UpdateRatingRequest;
+use App\Http\Resources\RatingResource;
 use App\Models\Rating;
-use Illuminate\Http\Request;
 
 class RatingController extends Controller
 {
     public function index()
     {
         $ratings = Rating::where('userID', auth('api')->id())->get();
-        return response()->json($ratings);
+        return RatingResource::collection($ratings);
     }
 
-    public function store(Request $request)
+    public function store(StoreRatingRequest $request)
     {
-        $validatedData = $request->validate([
-            'schoolID' => 'required|exists:schools,id',
-            'rating' => 'required|in:1,2,3,4,5',
-        ]);
-
-        $validatedData['userID'] = auth('api')->id();
-        $rating = Rating::create($validatedData);
-        return response()->json($rating, 201);
+        $data = $request->validated();
+        $data['userID'] = auth('api')->id();
+        $rating = Rating::create($data);
+        return new RatingResource($rating);
     }
 
     public function show(Rating $rating)
@@ -31,21 +29,17 @@ class RatingController extends Controller
         if (auth('api')->id() !== $rating->userID) {
             return response()->json(['error' => 'Unauthorized'], 403);
         }
-        return response()->json($rating);
+        return new RatingResource($rating);
     }
 
-    public function update(Request $request, Rating $rating)
+    public function update(UpdateRatingRequest $request, Rating $rating)
     {
         if (auth('api')->id() !== $rating->userID) {
             return response()->json(['error' => 'Unauthorized'], 403);
         }
 
-        $validatedData = $request->validate([
-            'rating' => 'sometimes|in:1,2,3,4,5',
-        ]);
-
-        $rating->update($validatedData);
-        return response()->json($rating);
+        $rating->update($request->validated());
+        return new RatingResource($rating);
     }
 
     public function destroy(Rating $rating)

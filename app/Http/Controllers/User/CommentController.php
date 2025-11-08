@@ -3,46 +3,40 @@
 namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\User\Comment\StoreCommentRequest;
+use App\Http\Requests\User\Comment\UpdateCommentRequest;
+use App\Http\Resources\CommentResource;
 use App\Models\Comment;
-use Illuminate\Http\Request;
 
 class CommentController extends Controller
 {
     public function index()
     {
         $comments = Comment::where('userID', auth('api')->id())->get();
-        return response()->json($comments);
+        return CommentResource::collection($comments);
     }
 
-    public function store(Request $request)
+    public function store(StoreCommentRequest $request)
     {
-        $validatedData = $request->validate([
-            'schoolID' => 'required|exists:schools,id',
-            'comment' => 'required|string',
-        ]);
-
-        $validatedData['userID'] = auth('api')->id();
-        $comment = Comment::create($validatedData);
-        return response()->json($comment, 201);
+        $data = $request->validated();
+        $data['userID'] = auth('api')->id();
+        $comment = Comment::create($data);
+        return new CommentResource($comment);
     }
 
     public function show(Comment $comment)
     {
-        return response()->json($comment);
+        return new CommentResource($comment);
     }
 
-    public function update(Request $request, Comment $comment)
+    public function update(UpdateCommentRequest $request, Comment $comment)
     {
         if (auth('api')->id() !== $comment->userID) {
             return response()->json(['error' => 'Unauthorized'], 403);
         }
 
-        $validatedData = $request->validate([
-            'comment' => 'sometimes|string',
-        ]);
-
-        $comment->update($validatedData);
-        return response()->json($comment);
+        $comment->update($request->validated());
+        return new CommentResource($comment);
     }
 
     public function destroy(Comment $comment)
