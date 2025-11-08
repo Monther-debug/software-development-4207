@@ -9,12 +9,11 @@ return new class extends Migration {
     {
         Schema::create('ratings', function (Blueprint $table) {
             $table->id();
-            $table->morphs('rateable');
-            $table->string('author')->nullable();
-            $table->unsignedTinyInteger('score'); 
-            $table->text('note')->nullable();
+            $table->unsignedBigInteger('schoolID');
+            $table->unsignedBigInteger('userID');
+            $table->unsignedTinyInteger('rating');
+            $table->text('comment')->nullable();
             $table->timestamps();
-            $table->softDeletes();
         });
     }
 

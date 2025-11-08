@@ -11,13 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('managers', function (Blueprint $table) {
+        Schema::create('success_ratings', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->string('username')->unique();
-            $table->string('phone_number')->unique();
-            $table->string('password');
             $table->unsignedBigInteger('schoolID');
+            $table->year('year');
+            $table->decimal('success_rate', 5, 2);
+            $table->text('notes')->nullable();
             $table->timestamps();
         });
     }
@@ -27,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('managers');
+        Schema::dropIfExists('success_ratings');
     }
 };

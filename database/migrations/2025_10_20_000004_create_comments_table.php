@@ -9,11 +9,10 @@ return new class extends Migration {
     {
         Schema::create('comments', function (Blueprint $table) {
             $table->id();
-            $table->morphs('commentable');
-            $table->string('author')->nullable();
-            $table->text('body');
+            $table->unsignedBigInteger('schoolID');
+            $table->unsignedBigInteger('userID');
+            $table->text('comment');
             $table->timestamps();
-            $table->softDeletes();
         });
     }
 

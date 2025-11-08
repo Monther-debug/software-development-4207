@@ -14,22 +14,22 @@ class Manager extends Authenticatable implements JWTSubject
 
     protected $fillable = [
         'name',
-        'email',
+        'username',
+        'phone_number',
         'password',
-        'school_id',
+        'schoolID',
     ];
 
     protected function casts(): array
     {
         return [
-            'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
     }
 
-    public function School()
+    public function school()
     {
-        return $this->belongsTo(School::class ,"school_id");
+        return $this->belongsTo(School::class, 'schoolID');
     }
 
     public function getJWTIdentifier()

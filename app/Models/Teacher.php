@@ -37,16 +37,6 @@ class Teacher extends Authenticatable implements JWTSubject
         return $this->belongsTo(Grade::class);
     }
 
-    public function comments()
-    {
-        return $this->morphMany(Comment::class, 'commentable');
-    }
-
-    public function ratings()
-    {
-        return $this->morphMany(Rating::class, 'rateable');
-    }
-
     public function schools()
     {
         return $this->belongsToMany(School::class, 'schools_teachers', 'teacherID', 'schoolID')

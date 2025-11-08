@@ -20,17 +20,27 @@ class School extends Model
 
     public function managers()
     {
-        return $this->hasMany(Manager::class);
-    }
-
-    public function comments()
-    {
-        return $this->morphMany(Comment::class, 'commentable');
+        return $this->hasMany(Manager::class, 'schoolID');
     }
 
     public function ratings()
     {
-        return $this->morphMany(Rating::class, 'rateable');
+        return $this->hasMany(Rating::class, 'schoolID');
+    }
+
+    public function successRatings()
+    {
+        return $this->hasMany(SuccessRating::class, 'schoolID');
+    }
+
+    public function comments()
+    {
+        return $this->hasMany(Comment::class, 'schoolID');
+    }
+
+    public function fees()
+    {
+        return $this->hasMany(Fee::class, 'schoolID');
     }
 
     public function teachers()

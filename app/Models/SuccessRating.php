@@ -5,31 +5,19 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Rating extends Model
+class SuccessRating extends Model
 {
     use HasFactory;
 
     protected $fillable = [
         'schoolID',
-        'userID',
-        'rating',
-        'comment',
+        'year',
+        'success_rate',
+        'notes',
     ];
-
-    protected function casts(): array
-    {
-        return [
-            'rating' => 'integer',
-        ];
-    }
 
     public function school()
     {
         return $this->belongsTo(School::class, 'schoolID');
-    }
-
-    public function user()
-    {
-        return $this->belongsTo(User::class, 'userID');
     }
 }

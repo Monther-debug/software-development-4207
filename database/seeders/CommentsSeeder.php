@@ -4,7 +4,7 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use App\Models\School;
-use App\Models\Teacher;
+use App\Models\User;
 use App\Models\Comment;
 
 class CommentsSeeder extends Seeder
@@ -12,25 +12,14 @@ class CommentsSeeder extends Seeder
     public function run(): void
     {
         $school = School::first();
-        $teacher = Teacher::first();
+        $user = User::first();
 
-        if ($school) {
+        if ($school && $user) {
             Comment::firstOrCreate([
-                'commentable_type' => School::class,
-                'commentable_id' => $school->id,
-                'body' => 'Great school!'
+                'schoolID' => $school->id,
+                'userID' => $user->id,
             ], [
-                'author' => 'Seeder',
-            ]);
-        }
-
-        if ($teacher) {
-            Comment::firstOrCreate([
-                'commentable_type' => Teacher::class,
-                'commentable_id' => $teacher->id,
-                'body' => 'Inspiring teacher.'
-            ], [
-                'author' => 'Seeder',
+                'comment' => 'Great school!',
             ]);
         }
     }

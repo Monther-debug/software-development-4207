@@ -14,21 +14,15 @@ class Admin extends Authenticatable implements JWTSubject
     protected $fillable = [
         'name',
         'email',
+        'phone_number',
         'password',
-        'manager_id',
     ];
 
     protected function casts(): array
     {
         return [
-            'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
-    }
-
-    public function manager()
-    {
-        return $this->belongsTo(Manager::class);
     }
 
     public function getJWTIdentifier()
