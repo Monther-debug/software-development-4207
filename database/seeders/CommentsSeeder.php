@@ -15,12 +15,19 @@ class CommentsSeeder extends Seeder
         $user = User::first();
 
         if ($school && $user) {
-            Comment::firstOrCreate([
-                'schoolID' => $school->id,
-                'userID' => $user->id,
-            ], [
-                'comment' => 'Great school!',
-            ]);
+            $comments = [
+                'Excellent school with dedicated teachers and good facilities.',
+                'My children really enjoy studying here. The environment is very supportive.',
+                'Great academic programs and extracurricular activities.',
+            ];
+
+            foreach ($comments as $commentText) {
+                Comment::create([
+                    'schoolID' => $school->id,
+                    'userID' => $user->id,
+                    'comment' => $commentText,
+                ]);
+            }
         }
     }
 }

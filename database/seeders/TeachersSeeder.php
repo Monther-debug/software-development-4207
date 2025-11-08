@@ -10,9 +10,11 @@ class TeachersSeeder extends Seeder
     public function run(): void
     {
         $teachers = [
-            ['name' => 'John Doe', 'subject' => 'Mathematics', 'experience' => 5],
-            ['name' => 'Jane Smith', 'subject' => 'English', 'experience' => 8],
-            ['name' => 'Ahmed Ali', 'subject' => 'Science', 'experience' => 3],
+            ['name' => 'Monther Ibrahim', 'subject' => 'Mathematics', 'experience' => 8],
+            ['name' => 'Khadija Al-Mabrouk', 'subject' => 'Arabic Language', 'experience' => 12],
+            ['name' => 'Noura Al-Gaddafi', 'subject' => 'Science', 'experience' => 5],
+            ['name' => 'Zainab Al-Warfali', 'subject' => 'English Language', 'experience' => 7],
+            ['name' => 'Hanan Al-Zawi', 'subject' => 'Islamic Education', 'experience' => 10],
         ];
 
         foreach ($teachers as $data) {

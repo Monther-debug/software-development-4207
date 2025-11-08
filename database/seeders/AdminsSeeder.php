@@ -13,32 +13,32 @@ class AdminsSeeder extends Seeder
     {
         // Ensure there is at least one school
         $school = School::first() ?? School::create([
-            'name' => 'Seed School',
-            'address' => '100 Seed Ave',
+            'name' => 'Al-Noor Primary School',
+            'address' => 'Al-Jumhuriya Street, Tripoli',
             'status' => 'active',
             'type' => 'female',
-            'level' => 'secondary',
+            'level' => 'primary',
         ]);
 
         $manager = Manager::first() ?? Manager::create([
-            'name' => 'Seed Manager',
-            'username' => 'seedmanager',
-            'phone_number' => '1234567890',
+            'name' => 'Fatima Ahmed',
+            'username' => 'fatima.ahmed',
+            'phone_number' => '0916880431',
             'password' => 'password',
             'schoolID' => $school->id,
         ]);
 
         $admins = [
             [
-                'name' => 'Main Admin',
-                'email' => 'admin@example.com',
-                'phone_number' => '0987654321',
+                'name' => 'Monther Ibrahim',
+                'email' => 'monther@school.ly',
+                'phone_number' => '0916880430',
                 'password' => 'password',
             ],
             [
-                'name' => 'Support Admin',
-                'email' => 'support.admin@example.com',
-                'phone_number' => '0987654322',
+                'name' => 'Ali ',
+                'email' => 'ali@school.ly',
+                'phone_number' => '0913519105',
                 'password' => 'password',
             ],
         ];
