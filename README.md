@@ -455,7 +455,6 @@ database/
 
 postman/
 ├── software-development-4207-updated.postman_collection.json  # Current
-└── software-development-4207.postman_collection.json          # Legacy
 
 routes/
 └── api.php                 # All API routes (56 endpoints)
