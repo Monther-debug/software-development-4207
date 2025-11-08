@@ -3,27 +3,25 @@
 namespace App\Http\Controllers\Manager;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Manager\Fee\StoreFeeRequest;
+use App\Http\Requests\Manager\Fee\UpdateFeeRequest;
+use App\Http\Resources\FeeResource;
 use App\Models\Fee;
-use Illuminate\Http\Request;
 
 class FeeController extends Controller
 {
     public function index()
     {
         $fees = Fee::where('schoolID', auth('manager')->user()->schoolID)->get();
-        return response()->json($fees);
+        return FeeResource::collection($fees);
     }
 
-    public function store(Request $request)
+    public function store(StoreFeeRequest $request)
     {
-        $validatedData = $request->validate([
-            'gradeID' => 'required|exists:grades,id',
-            'amount' => 'required|numeric|min:0',
-        ]);
-
-        $validatedData['schoolID'] = auth('manager')->user()->schoolID;
-        $fee = Fee::create($validatedData);
-        return response()->json($fee, 201);
+        $data = $request->validated();
+        $data['schoolID'] = auth('manager')->user()->schoolID;
+        $fee = Fee::create($data);
+        return new FeeResource($fee);
     }
 
     public function show(Fee $fee)
@@ -31,22 +29,17 @@ class FeeController extends Controller
         if ($fee->schoolID != auth('manager')->user()->schoolID) {
             return response()->json(['error' => 'Unauthorized'], 403);
         }
-        return response()->json($fee);
+        return new FeeResource($fee);
     }
 
-    public function update(Request $request, Fee $fee)
+    public function update(UpdateFeeRequest $request, Fee $fee)
     {
         if ($fee->schoolID != auth('manager')->user()->schoolID) {
             return response()->json(['error' => 'Unauthorized'], 403);
         }
 
-        $validatedData = $request->validate([
-            'gradeID' => 'sometimes|exists:grades,id',
-            'amount' => 'sometimes|numeric|min:0',
-        ]);
-
-        $fee->update($validatedData);
-        return response()->json($fee);
+        $fee->update($request->validated());
+        return new FeeResource($fee);
     }
 
     public function destroy(Fee $fee)

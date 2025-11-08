@@ -3,40 +3,34 @@
 namespace App\Http\Controllers\Manager;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Manager\Grade\StoreGradeRequest;
+use App\Http\Requests\Manager\Grade\UpdateGradeRequest;
+use App\Http\Resources\GradeResource;
 use App\Models\Grade;
-use Illuminate\Http\Request;
 
 class GradeController extends Controller
 {
     public function index()
     {
         $grades = Grade::all();
-        return response()->json($grades);
+        return GradeResource::collection($grades);
     }
 
-    public function store(Request $request)
+    public function store(StoreGradeRequest $request)
     {
-        $validatedData = $request->validate([
-            'name' => 'required|string|max:255',
-        ]);
-
-        $grade = Grade::create($validatedData);
-        return response()->json($grade, 201);
+        $grade = Grade::create($request->validated());
+        return new GradeResource($grade);
     }
 
     public function show(Grade $grade)
     {
-        return response()->json($grade);
+        return new GradeResource($grade);
     }
 
-    public function update(Request $request, Grade $grade)
+    public function update(UpdateGradeRequest $request, Grade $grade)
     {
-        $validatedData = $request->validate([
-            'name' => 'sometimes|string|max:255',
-        ]);
-
-        $grade->update($validatedData);
-        return response()->json($grade);
+        $grade->update($request->validated());
+        return new GradeResource($grade);
     }
 
     public function destroy(Grade $grade)
