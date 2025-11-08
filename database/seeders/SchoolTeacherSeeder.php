@@ -15,6 +15,7 @@ class SchoolTeacherSeeder extends Seeder
                 'schoolID' => 1,
                 'teacherID' => 1,
                 'gradeID' => 1,
+                'year' => 2025,
                 'created_at' => now(),
                 'updated_at' => now(),
             ],

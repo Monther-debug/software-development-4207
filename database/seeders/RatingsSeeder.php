@@ -15,12 +15,11 @@ class RatingsSeeder extends Seeder
         $user = User::first();
 
         if ($school && $user) {
-            foreach ([5, 4] as $ratingValue) {
+            foreach (['5', '4', '3'] as $ratingValue) {
                 Rating::create([
                     'schoolID' => $school->id,
                     'userID' => $user->id,
                     'rating' => $ratingValue,
-                    'comment' => 'School rating seed',
                 ]);
             }
         }

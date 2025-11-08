@@ -16,51 +16,26 @@ class FeesSeeder extends Seeder
             'name' => 'Demo School',
             'address' => '123 Main St',
             'status' => 'active',
-            'type' => 'public',
+            'type' => 'female',
             'level' => 'primary',
         ]);
 
-        // Ensure at least one grade exists for the school
-        $grade = Grade::where('school_id', $school->id)->first() ?? Grade::create([
-            'school_id' => $school->id,
-            'name' => 'Grade 1',
-            'code' => 'G1',
-            'status' => 'active',
-        ]);
+        // Get some grades
+        $grade1 = Grade::where('name', 'Grade 1')->first();
+        $grade2 = Grade::where('name', 'Grade 2')->first();
+        $grade3 = Grade::where('name', 'Grade 3')->first();
 
-        // Seed a few fees
-        $fees = [
-            [
-                'school_id' => $school->id,
-                'grade_id' => $grade->id,
-                'name' => 'Tuition',
-                'code' => 'TUITION',
-                'amount' => 500.00,
-                'currency' => 'USD',
-                'frequency' => 'term',
-                'status' => 'active',
-                'due_date' => now()->addDays(30)->toDateString(),
-                'description' => 'Term tuition fee',
-            ],
-            [
-                'school_id' => $school->id,
-                'grade_id' => null,
-                'name' => 'Registration',
-                'code' => 'REG',
-                'amount' => 50.00,
-                'currency' => 'USD',
-                'frequency' => 'once',
-                'status' => 'active',
-                'due_date' => now()->addDays(10)->toDateString(),
-                'description' => 'One-time registration fee',
-            ],
-        ];
+        if ($grade1 && $grade2 && $grade3) {
+            // Seed fees
+            $fees = [
+                ['schoolID' => $school->id, 'gradeID' => $grade1->id, 'amount' => 500.00],
+                ['schoolID' => $school->id, 'gradeID' => $grade2->id, 'amount' => 550.00],
+                ['schoolID' => $school->id, 'gradeID' => $grade3->id, 'amount' => 600.00],
+            ];
 
-        foreach ($fees as $data) {
-            Fee::firstOrCreate([
-                'school_id' => $data['school_id'],
-                'code' => $data['code'],
-            ], $data);
+            foreach ($fees as $data) {
+                Fee::create($data);
+            }
         }
     }
 }
