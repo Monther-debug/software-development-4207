@@ -13,13 +13,12 @@ class Rating extends Model
         'schoolID',
         'userID',
         'rating',
-        'comment',
     ];
 
     protected function casts(): array
     {
         return [
-            'rating' => 'integer',
+            'rating' => 'string',
         ];
     }
 

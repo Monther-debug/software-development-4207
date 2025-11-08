@@ -10,13 +10,8 @@ return new class extends Migration
     {
         Schema::create('grades', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('school_id')->constrained()->onDelete('cascade');
             $table->string('name');
-            $table->string('code');
-            $table->enum('status', ['active', 'inactive'])->default('active');
             $table->timestamps();
-            $table->softDeletes();
-            $table->unique(['school_id', 'code']);
         });
     }
 

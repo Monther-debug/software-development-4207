@@ -4,11 +4,10 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 
 class School extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory;
 
     protected $fillable = [
         'name',
@@ -46,7 +45,7 @@ class School extends Model
     public function teachers()
     {
         return $this->belongsToMany(Teacher::class, 'schools_teachers', 'schoolID', 'teacherID')
-            ->withPivot('gradeID')
+            ->withPivot('gradeID', 'year')
             ->withTimestamps();
     }
 }

@@ -19,13 +19,20 @@ class SchoolTeacherController extends Controller
     {
         $validatedData = $request->validate([
             'teacherID' => 'required|exists:teachers,id',
-            'gradeID' => 'nullable|exists:grades,id',
+            'gradeID' => 'required|exists:grades,id',
+            'year' => 'required|integer|min:2000|max:2100',
         ]);
 
         $teacherId = $validatedData['teacherID'];
-        $gradeId = $validatedData['gradeID'] ?? null;
+        $gradeId = $validatedData['gradeID'];
+        $year = $validatedData['year'];
 
-        $school->teachers()->syncWithoutDetaching([$teacherId => ['gradeID' => $gradeId]]);
+        $school->teachers()->syncWithoutDetaching([
+            $teacherId => [
+                'gradeID' => $gradeId,
+                'year' => $year
+            ]
+        ]);
 
         return response()->json(['message' => 'Teacher assigned successfully.'], 201);
     }
@@ -33,12 +40,11 @@ class SchoolTeacherController extends Controller
     public function update(Request $request, School $school, Teacher $teacher)
     {
         $validatedData = $request->validate([
-            'gradeID' => 'nullable|exists:grades,id',
+            'gradeID' => 'sometimes|exists:grades,id',
+            'year' => 'sometimes|integer|min:2000|max:2100',
         ]);
 
-        if (isset($validatedData['gradeID'])) {
-            $school->teachers()->updateExistingPivot($teacher->id, ['gradeID' => $validatedData['gradeID']]);
-        }
+        $school->teachers()->updateExistingPivot($teacher->id, $validatedData);
 
         return response()->json(['message' => 'Teacher assignment updated successfully.']);
     }

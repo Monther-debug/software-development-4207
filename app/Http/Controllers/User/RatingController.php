@@ -18,8 +18,7 @@ class RatingController extends Controller
     {
         $validatedData = $request->validate([
             'schoolID' => 'required|exists:schools,id',
-            'rating' => 'required|integer|min:1|max:5',
-            'comment' => 'nullable|string',
+            'rating' => 'required|in:1,2,3,4,5',
         ]);
 
         $validatedData['userID'] = auth('api')->id();
@@ -42,8 +41,7 @@ class RatingController extends Controller
         }
 
         $validatedData = $request->validate([
-            'rating' => 'sometimes|integer|min:1|max:5',
-            'comment' => 'nullable|string',
+            'rating' => 'sometimes|in:1,2,3,4,5',
         ]);
 
         $rating->update($validatedData);

@@ -14,9 +14,12 @@ return new class extends Migration
         Schema::create('success_ratings', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('schoolID');
-            $table->year('year');
-            $table->decimal('success_rate', 5, 2);
-            $table->text('notes')->nullable();
+            $table->unsignedBigInteger('gradeID');
+            $table->integer('total_students');
+            $table->integer('A');
+            $table->integer('B');
+            $table->integer('C');
+            $table->integer('D');
             $table->timestamps();
         });
     }

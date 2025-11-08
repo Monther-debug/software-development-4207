@@ -17,9 +17,12 @@ class SchoolSuccessRateController extends Controller
     public function store(Request $request)
     {
         $validatedData = $request->validate([
-            'year' => 'required|integer|min:2000|max:2100',
-            'success_rate' => 'required|numeric|min:0|max:100',
-            'notes' => 'nullable|string',
+            'gradeID' => 'required|exists:grades,id',
+            'total_students' => 'required|integer|min:0',
+            'A' => 'required|integer|min:0',
+            'B' => 'required|integer|min:0',
+            'C' => 'required|integer|min:0',
+            'D' => 'required|integer|min:0',
         ]);
 
         $validatedData['schoolID'] = auth('manager')->user()->schoolID;
@@ -48,9 +51,12 @@ class SchoolSuccessRateController extends Controller
         }
 
         $validatedData = $request->validate([
-            'year' => 'sometimes|integer|min:2000|max:2100',
-            'success_rate' => 'sometimes|numeric|min:0|max:100',
-            'notes' => 'nullable|string',
+            'gradeID' => 'sometimes|exists:grades,id',
+            'total_students' => 'sometimes|integer|min:0',
+            'A' => 'sometimes|integer|min:0',
+            'B' => 'sometimes|integer|min:0',
+            'C' => 'sometimes|integer|min:0',
+            'D' => 'sometimes|integer|min:0',
         ]);
 
         $successRating->update($validatedData);

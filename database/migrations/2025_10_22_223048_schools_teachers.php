@@ -11,7 +11,8 @@ return new class extends Migration {
             $table->id();
             $table->unsignedBigInteger('schoolID');
             $table->unsignedBigInteger('teacherID');
-            $table->unsignedBigInteger('gradeID')->nullable();
+            $table->unsignedBigInteger('gradeID');
+            $table->integer('year');
             $table->timestamps();
         });
     }

@@ -17,10 +17,7 @@ class GradeController extends Controller
     public function store(Request $request)
     {
         $validatedData = $request->validate([
-            'school_id' => 'required|exists:schools,id',
             'name' => 'required|string|max:255',
-            'code' => 'required|string|max:50',
-            'status' => 'required|in:active,inactive',
         ]);
 
         $grade = Grade::create($validatedData);
@@ -35,10 +32,7 @@ class GradeController extends Controller
     public function update(Request $request, Grade $grade)
     {
         $validatedData = $request->validate([
-            'school_id' => 'sometimes|exists:schools,id',
             'name' => 'sometimes|string|max:255',
-            'code' => 'sometimes|string|max:50',
-            'status' => 'sometimes|in:active,inactive',
         ]);
 
         $grade->update($validatedData);

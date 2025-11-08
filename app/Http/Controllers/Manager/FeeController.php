@@ -19,7 +19,6 @@ class FeeController extends Controller
         $validatedData = $request->validate([
             'gradeID' => 'required|exists:grades,id',
             'amount' => 'required|numeric|min:0',
-            'description' => 'nullable|string',
         ]);
 
         $validatedData['schoolID'] = auth('manager')->user()->schoolID;
@@ -44,7 +43,6 @@ class FeeController extends Controller
         $validatedData = $request->validate([
             'gradeID' => 'sometimes|exists:grades,id',
             'amount' => 'sometimes|numeric|min:0',
-            'description' => 'nullable|string',
         ]);
 
         $fee->update($validatedData);

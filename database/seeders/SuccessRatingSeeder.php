@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use App\Models\School;
+use App\Models\Grade;
 use App\Models\SuccessRating;
 
 class SuccessRatingSeeder extends Seeder
@@ -11,20 +12,27 @@ class SuccessRatingSeeder extends Seeder
     public function run(): void
     {
         $school = School::first();
+        $grade = Grade::first();
 
-        if ($school) {
+        if ($school && $grade) {
             SuccessRating::create([
                 'schoolID' => $school->id,
-                'year' => 2024,
-                'success_rate' => 85.5,
-                'notes' => 'Good performance overall',
+                'gradeID' => $grade->id,
+                'total_students' => 100,
+                'A' => 20,
+                'B' => 35,
+                'C' => 30,
+                'D' => 15,
             ]);
 
             SuccessRating::create([
                 'schoolID' => $school->id,
-                'year' => 2023,
-                'success_rate' => 82.3,
-                'notes' => 'Steady improvement',
+                'gradeID' => $grade->id,
+                'total_students' => 95,
+                'A' => 25,
+                'B' => 30,
+                'C' => 28,
+                'D' => 12,
             ]);
         }
     }

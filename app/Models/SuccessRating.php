@@ -11,13 +11,21 @@ class SuccessRating extends Model
 
     protected $fillable = [
         'schoolID',
-        'year',
-        'success_rate',
-        'notes',
+        'gradeID',
+        'total_students',
+        'A',
+        'B',
+        'C',
+        'D',
     ];
 
     public function school()
     {
         return $this->belongsTo(School::class, 'schoolID');
+    }
+
+    public function grade()
+    {
+        return $this->belongsTo(Grade::class, 'gradeID');
     }
 }

@@ -10,14 +10,10 @@ return new class extends Migration
     {
         Schema::create('teachers', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('school_id')->constrained()->onDelete('cascade');
-            $table->foreignId('grade_id')->nullable()->constrained()->nullOnDelete();
             $table->string('name');
-            $table->string('email')->unique();
-            $table->string('password');
-            $table->timestamp('email_verified_at')->nullable();
+            $table->string('subject');
+            $table->integer('experience')->default(0);
             $table->timestamps();
-            $table->softDeletes();
         });
     }
 
