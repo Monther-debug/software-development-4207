@@ -11,13 +11,18 @@ class RatingController extends Controller
 {
     public function index()
     {
-        $ratings = Rating::latest()->get();
+        // Only show ratings created by the authenticated user
+        $ratings = Rating::where('userID', auth()->id())->latest()->get();
         return RatingResource::collection($ratings);
     }
 
     public function store(StoreRatingRequest $request)
     {
-        $rating = Rating::create($request->validated());
+        // Automatically set the authenticated user's ID
+        $data = $request->validated();
+        $data['userID'] = auth()->id();
+        
+        $rating = Rating::create($data);
         return (new RatingResource($rating))
             ->response()
             ->setStatusCode(201);
@@ -25,17 +30,32 @@ class RatingController extends Controller
 
     public function show(Rating $rating)
     {
+        // Ensure user can only view their own rating
+        if ($rating->userID !== auth()->id()) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+        
         return new RatingResource($rating);
     }
 
     public function update(StoreRatingRequest $request, Rating $rating)
     {
+        // Ensure user can only update their own rating
+        if ($rating->userID !== auth()->id()) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+        
         $rating->update($request->validated());
         return new RatingResource($rating);
     }
 
     public function destroy(Rating $rating)
     {
+        // Ensure user can only delete their own rating
+        if ($rating->userID !== auth()->id()) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+        
         $rating->delete();
         return response()->json(null, 204);
     }

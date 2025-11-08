@@ -11,10 +11,9 @@ class StoreCommentRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'commentable_type' => 'required|string',
-            'commentable_id' => 'required|integer',
-            'author' => 'nullable|string|max:255',
-            'body' => 'required|string',
+            'schoolID' => 'required|integer|exists:schools,id',
+            'comment' => 'required|string|max:1000',
+            // userID is set automatically from auth()->id()
         ];
     }
 }

@@ -11,11 +11,9 @@ class StoreRatingRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'rateable_type' => 'required|string',
-            'rateable_id' => 'required|integer',
-            'author' => 'nullable|string|max:255',
-            'score' => 'required|integer|min:1|max:5',
-            'note' => 'nullable|string',
+            'schoolID' => 'required|integer|exists:schools,id',
+            'rating' => 'required|string|in:1,2,3,4,5',
+            // userID is set automatically from auth()->id()
         ];
     }
 }
