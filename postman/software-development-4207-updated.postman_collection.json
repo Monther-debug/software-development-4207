@@ -5,6 +5,17 @@
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
     "description": "Complete API collection for School Management System with Admin, Manager, and User roles"
   },
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "pm.request.headers.add({key: 'Accept', value: 'application/json' });"
+        ]
+      }
+    }
+  ],
   "variable": [
     { "key": "baseUrl", "value": "http://127.0.0.1:8001", "type": "string" },
     { "key": "adminToken", "value": "", "type": "string" },
@@ -46,7 +57,10 @@
               ],
               "request": {
                 "method": "POST",
-                "header": [{ "key": "Content-Type", "value": "application/json" }],
+                "header": [
+                  { "key": "Content-Type", "value": "application/json" },
+                  { "key": "Accept", "value": "application/json" }
+                ],
                 "body": {
                   "mode": "raw",
                   "raw": "{\n  \"phone_number\": \"0987654321\",\n  \"password\": \"password\"\n}"
