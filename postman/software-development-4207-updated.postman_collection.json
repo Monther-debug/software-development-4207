@@ -704,9 +704,9 @@
                   { "key": "Authorization", "value": "Bearer {{managerToken}}" }
                 ],
                 "url": {
-                  "raw": "{{baseUrl}}/api/manager/schools/{{schoolId}}/teachers",
+                  "raw": "{{baseUrl}}/api/manager/schools/teachers",
                   "host": ["{{baseUrl}}"],
-                  "path": ["api", "manager", "schools", "{{schoolId}}", "teachers"]
+                  "path": ["api", "manager", "schools", "teachers"]
                 }
               }
             },
@@ -723,9 +723,9 @@
                   "raw": "{\n  \"teacherID\": 1,\n  \"gradeID\": 1,\n  \"year\": 2025\n}"
                 },
                 "url": {
-                  "raw": "{{baseUrl}}/api/manager/schools/{{schoolId}}/teachers",
+                  "raw": "{{baseUrl}}/api/manager/schools/teachers",
                   "host": ["{{baseUrl}}"],
-                  "path": ["api", "manager", "schools", "{{schoolId}}", "teachers"]
+                  "path": ["api", "manager", "schools", "teachers"]
                 }
               }
             },
@@ -742,9 +742,9 @@
                   "raw": "{\n  \"gradeID\": 2,\n  \"year\": 2025\n}"
                 },
                 "url": {
-                  "raw": "{{baseUrl}}/api/manager/schools/{{schoolId}}/teachers/{{teacherId}}",
+                  "raw": "{{baseUrl}}/api/manager/schools/teachers/{{teacherId}}",
                   "host": ["{{baseUrl}}"],
-                  "path": ["api", "manager", "schools", "{{schoolId}}", "teachers", "{{teacherId}}"]
+                  "path": ["api", "manager", "schools", "teachers", "{{teacherId}}"]
                 }
               }
             },
@@ -756,9 +756,9 @@
                   { "key": "Authorization", "value": "Bearer {{managerToken}}" }
                 ],
                 "url": {
-                  "raw": "{{baseUrl}}/api/manager/schools/{{schoolId}}/teachers/{{teacherId}}",
+                  "raw": "{{baseUrl}}/api/manager/schools/teachers/{{teacherId}}",
                   "host": ["{{baseUrl}}"],
-                  "path": ["api", "manager", "schools", "{{schoolId}}", "teachers", "{{teacherId}}"]
+                  "path": ["api", "manager", "schools", "teachers", "{{teacherId}}"]
                 }
               }
             }

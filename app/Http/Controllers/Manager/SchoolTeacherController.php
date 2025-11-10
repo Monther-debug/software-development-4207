@@ -9,24 +9,35 @@ use Illuminate\Http\Request;
 
 class SchoolTeacherController extends Controller
 {
-    public function index(School $school)
+    public function index()
     {
-        // Ensure manager can only view their own school's teachers
-        if ($school->id != auth('manager')->user()->schoolID) {
-            return response()->json(['error' => 'Unauthorized'], 403);
+        // Get the manager's school automatically
+        $manager = auth('manager')->user();
+        if (! $manager || ! $manager->schoolID) {
+            return response()->json(['error' => 'School not found for manager'], 404);
         }
-        
+
+        $school = School::find($manager->schoolID);
+        if (! $school) {
+            return response()->json(['error' => 'School not found'], 404);
+        }
+
         $teachers = $school->teachers()->get();
         return response()->json($teachers);
     }
 
-    public function store(Request $request, School $school)
+    public function store(Request $request)
     {
-        // Ensure manager can only assign teachers to their own school
-        if ($school->id != auth('manager')->user()->schoolID) {
-            return response()->json(['error' => 'Unauthorized'], 403);
+        $manager = auth('manager')->user();
+        if (! $manager || ! $manager->schoolID) {
+            return response()->json(['error' => 'School not found for manager'], 404);
         }
-        
+
+        $school = School::find($manager->schoolID);
+        if (! $school) {
+            return response()->json(['error' => 'School not found'], 404);
+        }
+
         $validatedData = $request->validate([
             'teacherID' => 'required|exists:teachers,id',
             'gradeID' => 'required|exists:grades,id',
@@ -47,13 +58,18 @@ class SchoolTeacherController extends Controller
         return response()->json(['message' => 'Teacher assigned successfully.'], 201);
     }
 
-    public function update(Request $request, School $school, Teacher $teacher)
+    public function update(Request $request, Teacher $teacher)
     {
-        // Ensure manager can only update their own school's teacher assignments
-        if ($school->id != auth('manager')->user()->schoolID) {
-            return response()->json(['error' => 'Unauthorized'], 403);
+        $manager = auth('manager')->user();
+        if (! $manager || ! $manager->schoolID) {
+            return response()->json(['error' => 'School not found for manager'], 404);
         }
-        
+
+        $school = School::find($manager->schoolID);
+        if (! $school) {
+            return response()->json(['error' => 'School not found'], 404);
+        }
+
         $validatedData = $request->validate([
             'gradeID' => 'sometimes|exists:grades,id',
             'year' => 'sometimes|integer|min:2000|max:2100',
@@ -64,13 +80,18 @@ class SchoolTeacherController extends Controller
         return response()->json(['message' => 'Teacher assignment updated successfully.']);
     }
 
-    public function destroy(School $school, Teacher $teacher)
+    public function destroy(Teacher $teacher)
     {
-        // Ensure manager can only remove teachers from their own school
-        if ($school->id != auth('manager')->user()->schoolID) {
-            return response()->json(['error' => 'Unauthorized'], 403);
+        $manager = auth('manager')->user();
+        if (! $manager || ! $manager->schoolID) {
+            return response()->json(['error' => 'School not found for manager'], 404);
         }
-        
+
+        $school = School::find($manager->schoolID);
+        if (! $school) {
+            return response()->json(['error' => 'School not found'], 404);
+        }
+
         $school->teachers()->detach($teacher->id);
         return response()->json(null, 204);
     }
