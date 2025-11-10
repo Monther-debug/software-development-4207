@@ -13,7 +13,8 @@ class ManagerResource extends JsonResource
         return [
             'id' => $this->id,
             'name' => $this->name,
-            'email' => $this->email,
+            // 'email' => $this->email,
+            'phone_number' => $this->phone_number,
             'school_id' => $this->school_id,
             'email_verified_at' => $this->email_verified_at,
             'created_at' => $this->created_at,

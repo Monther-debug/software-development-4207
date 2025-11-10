@@ -66,4 +66,24 @@ class User extends Authenticatable implements JWTSubject
     {
         return [];
     }
+
+    /**
+     * Helper to return a User by id or the currently authenticated user.
+     *
+     * @param  int|null  $id  The user id to fetch. If null, returns authenticated user.
+     * @return self|null
+     */
+    public static function getUser(?int $id = null): ?self
+    {
+        if ($id !== null) {
+            return self::find($id);
+        }
+
+        // Try to return the currently authenticated user; return null if none or on failure.
+        try {
+            return auth()->user();
+        } catch (\Throwable $e) {
+            return null;
+        }
+    }
 }

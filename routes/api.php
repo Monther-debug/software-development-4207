@@ -13,6 +13,7 @@ use App\Http\Controllers\Manager\SchoolTeacherController;
 use App\Http\Controllers\Admin\AuthController as AdminAuthController;
 use App\Http\Controllers\Manager\AuthController as ManagerAuthController;
 use App\Http\Controllers\User\AuthController as UserAuthController;
+use App\Http\Controllers\User\UserController;
 use App\Http\Controllers\Admin\SchoolSuccessRateController as AdminSchoolSuccessRateController;
 
 // Authentication endpoints
@@ -50,6 +51,7 @@ Route::middleware('auth:manager')->prefix('manager')->group(function () {
 
 // User routes - protected by api guard
 Route::middleware('auth:api')->prefix('user')->group(function () {
+    Route::get('/', [UserController::class, 'show']);
     Route::apiResource('ratings', RatingController::class);
     Route::apiResource('comments', CommentController::class);
     Route::post('logout', [UserAuthController::class, 'logout']);
