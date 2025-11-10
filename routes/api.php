@@ -36,7 +36,6 @@ Route::middleware('auth:manager')->prefix('manager')->group(function () {
     Route::apiResource('grades', GradeController::class);
     Route::apiResource('fees', FeeController::class);
     
-    // School-Teacher assignments (manager's school is derived from the authenticated manager)
     Route::prefix('schools')->group(function () {
         Route::get('teachers', [SchoolTeacherController::class, 'index']);
         Route::post('teachers', [SchoolTeacherController::class, 'store']);
