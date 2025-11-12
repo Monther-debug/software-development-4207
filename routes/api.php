@@ -15,6 +15,7 @@ use App\Http\Controllers\Manager\AuthController as ManagerAuthController;
 use App\Http\Controllers\User\AuthController as UserAuthController;
 use App\Http\Controllers\User\UserController;
 use App\Http\Controllers\Admin\SchoolSuccessRateController as AdminSchoolSuccessRateController;
+use App\Http\Controllers\SampleController;
 
 // Authentication endpoints
 Route::post('admin/login', [AdminAuthController::class, 'login']);
@@ -56,3 +57,7 @@ Route::middleware('auth:api')->prefix('user')->group(function () {
     Route::apiResource('comments', CommentController::class);
     Route::post('logout', [UserAuthController::class, 'logout']);
 });
+
+// Sample endpoints (controller defines index() for GET)
+Route::get('samples/', [SampleController::class, 'index']);
+Route::post('samples', [SampleController::class, 'add']);

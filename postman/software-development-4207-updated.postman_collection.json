@@ -27,7 +27,8 @@
     { "key": "gradeId", "value": "1", "type": "string" },
     { "key": "feeId", "value": "1", "type": "string" },
     { "key": "ratingId", "value": "1", "type": "string" },
-    { "key": "commentId", "value": "1", "type": "string" }
+  { "key": "commentId", "value": "1", "type": "string" },
+  { "key": "sampleId", "value": "1", "type": "string" }
   ],
   "item": [
     {
@@ -1127,6 +1128,62 @@
               }
             }
           ]
+        }
+      ]
+    },
+    {
+      "name": "Samples",
+      "item": [
+        {
+          "name": "Get Samples",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Accept", "value": "application/json" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/samples",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "samples"]
+            }
+          }
+        },
+        {
+          "name": "Create Sample",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 201 || pm.response.code === 200) {",
+                  "  pm.test('Sample created returns id and text', function () {",
+                  "    const data = pm.response.json();",
+                  "    pm.expect(data).to.have.property('id');",
+                  "    pm.expect(data).to.have.property('text');",
+                  "    pm.collectionVariables.set('sampleId', data.id);",
+                  "  });",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"text\": \"Example sample text\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/samples",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "samples"]
+            }
+          }
         }
       ]
     }
