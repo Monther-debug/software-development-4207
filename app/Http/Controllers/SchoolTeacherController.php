@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use App\Http\Requests\AssignTeacherToSchoolRequest;
 use App\Http\Requests\UpdateSchoolTeacherRequest;
 use App\Http\Resources\SchoolTeacherResource;
+use Symfony\Component\HttpFoundation\AcceptHeader;
 
 class SchoolTeacherController extends Controller
 {
@@ -32,12 +33,15 @@ class SchoolTeacherController extends Controller
 
     public function update(UpdateSchoolTeacherRequest $request, School $school, Teacher $teacher)
     {
-        $data = $request->validated();
-        if (isset($data['gradeID'])) {
-            $school->teachers()->updateExistingPivot($teacher->id, ['gradeID' => $data['gradeID']]);
-        }
+       $data = $request->validated();
 
-        return response()->json(['message' => 'Teacher assignment updated successfully.']);
+        $teacherId = $data['teacherID'];
+        $gradeId = $data['gradeID'];
+
+        // attach; use syncWithoutDetaching to prevent duplicates
+        $school->teachers()->syncWithoutDetaching([$teacherId => ['gradeID' => $gradeId]]);
+      
+        ;
     }
 
     public function destroy(School $school, Teacher $teacher)

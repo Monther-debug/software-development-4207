@@ -15,11 +15,13 @@ class ManagerResource extends JsonResource
             'name' => $this->name,
             // 'email' => $this->email,
             'phone_number' => $this->phone_number,
-            'school_id' => $this->school_id,
+            // Note: DB column is `schoolID` (capital D), not `schoolId`
+            'schoolID' => $this->schoolID,
             'email_verified_at' => $this->email_verified_at,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
-            'school' => $this->whenLoaded('School'),
+            // Relationship method is `school()`, so use lowercase here
+            'school' => $this->whenLoaded('school'),
         ];
     }
 }
